@@ -6,4 +6,10 @@ services:
     # fetch .env
     env_file:
       - .env
+    environment:
+      - 'POSTGRES_DB=${DB_NAME}'
+      - 'POSTGRES_PASSWORD=${DB_PASS}'
+      - 'POSTGRES_USER=${DB_USER}'
+    ports:
+      - '${DB_PORT}'
 
