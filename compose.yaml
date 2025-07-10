@@ -1,9 +1,9 @@
+version: '3.8'
+
 services:
   postgres:
-    image: 'postgres:latest'
-    environment:
-      - 'POSTGRES_DB=vetra_db'
-      - 'POSTGRES_PASSWORD=vetra123'
-      - 'POSTGRES_USER=vetra'
-    ports:
-      - '5432'
+    image: postgres:latest
+    # fetch .env
+    env_file:
+      - .env
+
