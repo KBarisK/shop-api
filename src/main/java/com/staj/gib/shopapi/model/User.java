@@ -23,7 +23,10 @@ public class User
     @Column(name = "user_id")
     private UUID userId;
 
+    @Column(name = "username", length = 50, nullable = false)
     private String username;
+
+    @Column(name = "password", length = 255, nullable = false)
     private String password;
 
     @Column(name = "user_type")
