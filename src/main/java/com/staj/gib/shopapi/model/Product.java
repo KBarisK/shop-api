@@ -5,6 +5,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -30,16 +31,15 @@ public class Product
     @JoinColumn(name="category_id")
     private ProductCategory category;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
+    private List<ProductImage> images;
+
     @Lob
     @Column(name = "description")
     private String description;
 
     @Column(name = "stock")
     private Integer stock;
-
-    @Lob
-    @Column(name = "image_url")
-    private String imageUrl;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
