@@ -23,11 +23,11 @@ public class CartItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="cart_id")
-    private Cart cartID;
+    private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="product_id")
-    private Product productID;
+    private Product product;
 
     @Column(name = "price", precision = 18, scale = 2)
     private BigDecimal price;

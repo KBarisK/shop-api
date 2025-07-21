@@ -29,7 +29,7 @@ public class Cart {
 
     @ManyToOne
     @JoinColumn(name="user_id")
-    private User userID;
+    private User user;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
