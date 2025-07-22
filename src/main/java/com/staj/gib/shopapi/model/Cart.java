@@ -17,7 +17,7 @@ import java.util.UUID;
 public class Cart {
 
     public enum Status
-    {
+     {
         CLOSED,
         OPEN
     }
