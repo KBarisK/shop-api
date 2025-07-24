@@ -1,6 +1,6 @@
 package com.staj.gib.shopapi.repository;
 
-import com.staj.gib.shopapi.model.Cart;
+import com.staj.gib.shopapi.entity.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

@@ -1,10 +1,9 @@
-package com.staj.gib.shopapi.model;
+package com.staj.gib.shopapi.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 @Entity

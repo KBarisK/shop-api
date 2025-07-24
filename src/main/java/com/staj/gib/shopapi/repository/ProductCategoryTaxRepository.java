@@ -1,6 +1,6 @@
 package com.staj.gib.shopapi.repository;
 
-import com.staj.gib.shopapi.model.ProductCategoryTax;
+import com.staj.gib.shopapi.entity.ProductCategoryTax;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

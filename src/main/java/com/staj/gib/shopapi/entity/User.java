@@ -1,4 +1,4 @@
-package com.staj.gib.shopapi.model;
+package com.staj.gib.shopapi.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
