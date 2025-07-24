@@ -1,10 +1,11 @@
 package com.staj.gib.shopapi.entity;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.staj.gib.shopapi.enums.OrderStatus;
+import com.staj.gib.shopapi.enums.PaymentMethod;
 
 @Entity
 @Table(name = "\"order\"")  // order is reserved in postgresql
@@ -14,17 +15,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
-    // active happens when there are pending installments
-    public enum Status {
-        ACTIVE,
-        FINISHED,
-    }
-
-    public enum PaymentMethod {
-        PAYMENT_CASH,
-        PAYMENT_INSTALLMENT
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_id")
@@ -41,7 +31,7 @@ public class Order {
     private LocalDateTime updatedAt;
 
     @Column(name = "status")
-    private Status status;
+    private OrderStatus status;
 
     @Column(name = "total_amount", precision = 18, scale = 2)
     private BigDecimal totalAmount;
