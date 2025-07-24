@@ -2,7 +2,7 @@ package com.staj.gib.shopapi.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
+import com.staj.gib.shopapi.enums.CartStatus;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -15,13 +15,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Cart {
-
-    public enum Status
-     {
-        CLOSED,
-        OPEN
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "cart_id")
@@ -38,5 +31,5 @@ public class Cart {
     private LocalDateTime updatedAt;
 
     @Column(name="status")
-    private Status status;
+    private CartStatus status;
 }

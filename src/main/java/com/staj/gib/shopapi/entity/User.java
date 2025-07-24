@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.staj.gib.shopapi.enums.UserType;
 
 @Entity
 @Table(name = "\"user\"")  // user is reserved in postgresql
@@ -13,11 +14,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class User
 {
-    public enum UserType {
-        CUSTOMER,
-        ADMIN
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")

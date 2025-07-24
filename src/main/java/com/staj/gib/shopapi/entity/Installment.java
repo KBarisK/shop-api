@@ -1,7 +1,7 @@
 package com.staj.gib.shopapi.entity;
 import jakarta.persistence.*;
 import lombok.*;
-
+import com.staj.gib.shopapi.enums.InstallmentStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,12 +15,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Installment {
-
-    public enum Status {
-        PAID,
-        UNPAID,
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "installment_id")
@@ -43,5 +37,5 @@ public class Installment {
     private BigDecimal lateFee;
 
     @Column(name = "status")
-    private Status status;
+    private InstallmentStatus status;
 }
