@@ -12,13 +12,8 @@ import com.staj.gib.shopapi.enums.UserType;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class User
+public class User extends BaseEntity
 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id")
-    private UUID userId;
-
     @Column(name = "username", length = 50, nullable = false)
     private String username;
 
@@ -27,10 +22,4 @@ public class User
 
     @Column(name = "user_type")
     private UserType userType;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }

@@ -10,12 +10,7 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductImage {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "product_image_id")
-    private UUID productImageId;
-
+public class ProductImage extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="product_id")
     private Product product;

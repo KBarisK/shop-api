@@ -13,12 +13,7 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductCategoryTax {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "product_category_tax_id")
-    private UUID productCategoryTaxId;
-
+public class ProductCategoryTax extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="category_id")
     private ProductCategory category;

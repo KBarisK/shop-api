@@ -14,21 +14,10 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cart {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "cart_id")
-    private UUID cartId;
-
+public class Cart extends BaseEntity {
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     @Column(name="status")
     private CartStatus status;

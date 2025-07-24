@@ -14,21 +14,10 @@ import com.staj.gib.shopapi.enums.PaymentMethod;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_id")
-    private UUID orderId;
-
+public class Order extends BaseEntity{
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="cart_id")
     private Cart cart;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     @Column(name = "status")
     private OrderStatus status;

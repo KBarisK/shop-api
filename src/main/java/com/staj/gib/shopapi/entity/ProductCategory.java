@@ -10,13 +10,8 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductCategory
+public class ProductCategory extends BaseEntity
 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "category_id")
-    private UUID categoryId;
-
     @Column(name = "category_name", length = 20, nullable = false)
     private String categoryName;
 

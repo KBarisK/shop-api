@@ -13,12 +13,7 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class InstallmentPayment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "installment_payment_id")
-    private UUID installmentPaymentId;
-
+public class InstallmentPayment extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="order_id")
     private Order order;

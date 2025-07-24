@@ -11,12 +11,7 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tax {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "tax_id")
-    private UUID taxId;
-
+public class Tax extends BaseEntity{
     @Column(name = "tax_name", length = 50, nullable = false)
     private String taxName;
 }

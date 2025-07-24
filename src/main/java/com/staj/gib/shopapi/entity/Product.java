@@ -14,13 +14,8 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product
+public class Product extends BaseEntity
 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "product_id")
-    private UUID productId;
-
     @Column(name = "product_name", length = 50, nullable = false)
     private String productName;
 
@@ -40,12 +35,6 @@ public class Product
 
     @Column(name = "stock")
     private Integer stock;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     @Version
     @Column(name = "version")
