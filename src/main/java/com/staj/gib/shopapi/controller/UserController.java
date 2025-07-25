@@ -2,6 +2,7 @@ package com.staj.gib.shopapi.controller;
 
 import com.staj.gib.shopapi.entity.dto.CreateUserDto;
 import com.staj.gib.shopapi.entity.dto.RequestUserDto;
+import com.staj.gib.shopapi.entity.dto.UpdateUserDto;
 import com.staj.gib.shopapi.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,8 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<RequestUserDto> updateUser(@Valid @RequestBody RequestUserDto requestUserDto) {
-        return new ResponseEntity<>(requestUserDto, HttpStatus.OK);
+    public ResponseEntity<RequestUserDto> updateUser(@Valid @RequestBody UpdateUserDto updateUserDto) {
+        return this.userService.updateUser(updateUserDto).map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

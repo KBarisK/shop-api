@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * DTO for {@link com.staj.gib.shopapi.entity.User}
@@ -18,4 +19,5 @@ public class CreateUserDto implements Serializable {
     @NotNull
     @NotEmpty
     String password;
+    UUID id;
 }

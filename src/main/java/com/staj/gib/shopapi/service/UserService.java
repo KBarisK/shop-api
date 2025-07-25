@@ -3,6 +3,7 @@ package com.staj.gib.shopapi.service;
 import com.staj.gib.shopapi.entity.User;
 import com.staj.gib.shopapi.entity.dto.CreateUserDto;
 import com.staj.gib.shopapi.entity.dto.RequestUserDto;
+import com.staj.gib.shopapi.entity.dto.UpdateUserDto;
 import com.staj.gib.shopapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,5 +43,26 @@ public class UserService {
                 savedUser.getUsername(),
                 savedUser.getUserType()
         ));
+    }
+
+    public Optional<RequestUserDto> updateUser(UpdateUserDto updateUserDto) {
+        Optional<User> userOptional = userRepository.findById(updateUserDto.getId());
+
+        return userOptional.map(user -> {
+
+            user.setUsername(updateUserDto.getUsername());
+            user.setPassword(updateUserDto.getPassword());
+
+            User updatedUser = userRepository.save(user);
+
+            return new RequestUserDto(
+                    updatedUser.getId(),
+                    updatedUser.getCreatedAt(),
+                    updatedUser.getUpdatedAt(),
+                    updatedUser.getVersion(),
+                    updatedUser.getUsername(),
+                    updatedUser.getUserType()
+            );
+        });
     }
 }
