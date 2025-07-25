@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.net.URI;
 import java.util.UUID;
@@ -19,8 +20,8 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping(value = "/")
-    public ResponseEntity<RequestUserDto> getUser(UUID userId) {
+    @GetMapping(value = "/{userId}")
+    public ResponseEntity<RequestUserDto> getUser(@PathVariable UUID userId) {
         return this.userService.getUser(userId).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
