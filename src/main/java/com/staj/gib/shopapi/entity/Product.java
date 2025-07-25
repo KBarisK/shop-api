@@ -35,8 +35,4 @@ public class Product extends BaseEntity
 
     @Column(name = "stock")
     private Integer stock;
-
-    @Version
-    @Column(name = "version")
-    private Integer version;
 }
