@@ -1,7 +1,7 @@
 package com.staj.gib.shopapi.exception;
 
-public class UserNotFoundException extends Exception {
-    public UserNotFoundException(String message) {
-        super(message);
-    }
+import java.util.UUID;
+
+public class UserNotFoundException extends RuntimeException{
+    public UserNotFoundException(UUID id) {super("Could not find user " + id);}
 }

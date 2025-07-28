@@ -28,7 +28,7 @@ public class UserService {
                         user.getVersion(),
                         user.getUsername(),
                         user.getUserType()
-                )).orElseThrow(() -> new UserNotFoundException("User not found with id: " + userID));
+                )).orElseThrow(() -> new UserNotFoundException(userID));
     }
 
     public ResponseUserDto saveUser(CreateUserDto createUserDto) throws InvalidPasswordException {
@@ -57,7 +57,7 @@ public class UserService {
         }
 
         User user = userRepository.findById(updateUserDto.getId()).orElseThrow(
-                () -> new UserNotFoundException("User not found with id: " + updateUserDto.getId()));
+                () -> new UserNotFoundException(updateUserDto.getId()));
         user.setUsername(updateUserDto.getUsername());
         user.setPassword(updateUserDto.getPassword());
         User updatedUser = userRepository.save(user);
