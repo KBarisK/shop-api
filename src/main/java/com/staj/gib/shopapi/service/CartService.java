@@ -3,6 +3,7 @@ package com.staj.gib.shopapi.service;
 import com.staj.gib.shopapi.entity.Cart;
 import com.staj.gib.shopapi.entity.CartItem;
 import com.staj.gib.shopapi.entity.Product;
+import com.staj.gib.shopapi.entity.dto.CartDto;
 import com.staj.gib.shopapi.enums.CartStatus;
 import com.staj.gib.shopapi.exception.CartItemNotFound;
 import com.staj.gib.shopapi.exception.CartNotFound;
@@ -25,8 +26,10 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
 
-    public Cart getActiveCart(UUID userId) {
-        return this.cartRepository.findByIdAndStatus(userId, CartStatus.OPEN);
+    public CartDto getActiveCart(UUID userId) {
+        Cart cart = this.cartRepository.findByIdAndStatus(userId, CartStatus.OPEN);
+        List<CartItem> cartItemList = this.cartItemRepository.findAllByCart_Id(cart.getId());
+        return new CartDto(cart, cartItemList);
     }
 
     public void addItemToCart(UUID cartId, UUID productId,short quantity) {
