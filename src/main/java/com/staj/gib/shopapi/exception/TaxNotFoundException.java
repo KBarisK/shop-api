@@ -1,4 +1,4 @@
-package com.staj.gib.shopapi.controller;
+package com.staj.gib.shopapi.exception;
 
 import java.util.UUID;
 

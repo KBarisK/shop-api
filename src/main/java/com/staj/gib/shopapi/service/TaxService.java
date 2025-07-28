@@ -1,6 +1,6 @@
 package com.staj.gib.shopapi.service;
 
-import com.staj.gib.shopapi.controller.TaxNotFoundException;
+import com.staj.gib.shopapi.exception.TaxNotFoundException;
 import com.staj.gib.shopapi.entity.Tax;
 import com.staj.gib.shopapi.entity.dto.TaxRequest;
 import com.staj.gib.shopapi.entity.dto.TaxResponse;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
