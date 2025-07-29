@@ -18,6 +18,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,15 +37,21 @@ public class CartService {
         Optional<Cart> optionalCart = this.cartRepository.findByUser_IdAndStatus(userId, CartStatus.OPEN);
         if (optionalCart.isPresent()) {
             Cart cart = optionalCart.get();
-            List<CartItem> cartItemList = this.cartItemRepository.findAllByCart_Id(cart.getId());
-            return new CartDto(cart, cartItemList);
+            return new CartDto( cart.getId(),
+                    cart.getCreatedAt(),
+                    cart.getUpdatedAt(),
+                    cart.getCartItems() //TODO change it to cartItemDTO
+            );
         }
         else{
             User  user = this.userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException(userId));
-            Cart newCart = new Cart(user,CartStatus.OPEN);
+            Cart newCart = new Cart(user,CartStatus.OPEN,new ArrayList<>());
             Cart savedCart = this.cartRepository.save(newCart);
-            List<CartItem> cartItemList = this.cartItemRepository.findAllByCart_Id(savedCart.getId());
-            return new  CartDto(savedCart, cartItemList);
+            return new CartDto( savedCart.getId(),
+                    savedCart.getCreatedAt(),
+                    savedCart.getUpdatedAt(),
+                    new ArrayList<>()
+            );
         }
 
     }
