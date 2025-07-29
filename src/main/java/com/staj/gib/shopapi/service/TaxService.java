@@ -1,5 +1,6 @@
 package com.staj.gib.shopapi.service;
 
+import com.staj.gib.shopapi.exception.TaxAlreadyExistsException;
 import com.staj.gib.shopapi.exception.TaxNotFoundException;
 import com.staj.gib.shopapi.entity.Tax;
 import com.staj.gib.shopapi.entity.dto.TaxRequest;
@@ -28,6 +29,10 @@ public class TaxService {
     }
 
     public TaxResponse createTax(TaxRequest request) {
+        if (repository.existsByTaxNameIgnoreCase(request.getTaxName())) {
+            throw new TaxAlreadyExistsException("Tax with name '" + request.getTaxName() + "' already exists");
+        }
+
         Tax tax = repository.save(request.toEntity());
         return TaxResponse.fromEntity(tax);
     }
@@ -49,6 +54,12 @@ public class TaxService {
     public TaxResponse replaceTax(TaxRequest request, UUID id) {
         return repository.findById(id)
                 .map(tax -> {
+                    // check uniqueness for updates and exclude current tax
+                    if (!tax.getTaxName().equalsIgnoreCase(request.getTaxName()) &&
+                            repository.existsByTaxNameIgnoreCase(request.getTaxName())) {
+                        throw new TaxAlreadyExistsException("Tax with name '" + request.getTaxName() + "' already exists");
+                    }
+
                     tax.setTaxName(request.getTaxName());
                     return TaxResponse.fromEntity(repository.save(tax));
                 })

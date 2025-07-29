@@ -1,6 +1,7 @@
 package com.staj.gib.shopapi;
 
 import com.staj.gib.shopapi.exception.InvalidPasswordException;
+import com.staj.gib.shopapi.exception.TaxAlreadyExistsException;
 import com.staj.gib.shopapi.exception.TaxNotFoundException;
 import com.staj.gib.shopapi.exception.UserNotFoundException;
 import jakarta.annotation.Priority;
@@ -39,6 +40,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidPasswordException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleInvalidPassword(InvalidPasswordException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(TaxAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleTaxAlreadyExists(TaxAlreadyExistsException ex) {
         return ex.getMessage();
     }
 }
