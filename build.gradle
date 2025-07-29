@@ -30,14 +30,16 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.5.1'
     implementation 'org.springframework.boot:spring-boot-starter-security:3.5.3'
     implementation 'org.springframework.boot:spring-boot-starter-web:3.5.3'
+    implementation 'org.mapstruct:mapstruct:1.6.3'
     compileOnly 'org.projectlombok:lombok:1.18.38'
     developmentOnly 'org.springframework.boot:spring-boot-devtools:3.5.3'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose:3.5.3'
     runtimeOnly 'org.postgresql:postgresql:42.7.7'
     annotationProcessor 'org.projectlombok:lombok:1.18.38'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:3.5.3'
     testImplementation 'org.springframework.security:spring-security-test:6.5.1'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher1.12.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.2'
 }
 
 tasks.named('test') {
