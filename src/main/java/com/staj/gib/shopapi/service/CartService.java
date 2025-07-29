@@ -6,9 +6,9 @@ import com.staj.gib.shopapi.entity.Product;
 import com.staj.gib.shopapi.entity.User;
 import com.staj.gib.shopapi.entity.dto.CartDto;
 import com.staj.gib.shopapi.enums.CartStatus;
-import com.staj.gib.shopapi.exception.CartItemNotFound;
-import com.staj.gib.shopapi.exception.CartNotFound;
-import com.staj.gib.shopapi.exception.ProductNotFound;
+import com.staj.gib.shopapi.exception.CartItemNotFoundExcepiton;
+import com.staj.gib.shopapi.exception.CartNotFoundException;
+import com.staj.gib.shopapi.exception.ProductNotFoundException;
 import com.staj.gib.shopapi.exception.UserNotFoundException;
 import com.staj.gib.shopapi.repository.CartItemRepository;
 import com.staj.gib.shopapi.repository.CartRepository;
@@ -58,9 +58,9 @@ public class CartService {
 
     public void addItemToCart(UUID cartId, UUID productId,short quantity) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFound(productId));
+                .orElseThrow(() -> new ProductNotFoundException(productId));
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new CartNotFound(cartId));
+                .orElseThrow(() -> new CartNotFoundException(cartId));
 
         Optional<CartItem> existing = cartItemRepository.findByCart_IdAndProduct_Id(cartId, productId);
 
@@ -76,7 +76,7 @@ public class CartService {
 
     public void removeItemFromCart(UUID cartId, UUID productId) {
         CartItem cartItem = this.cartItemRepository.findByCart_IdAndProduct_Id(cartId,productId)
-                .orElseThrow(CartItemNotFound::new);
+                .orElseThrow(CartItemNotFoundExcepiton::new);
         this.cartItemRepository.delete(cartItem);
     }
 
