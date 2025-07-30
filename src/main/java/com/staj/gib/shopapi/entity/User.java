@@ -14,7 +14,7 @@ import com.staj.gib.shopapi.enums.UserType;
 @AllArgsConstructor
 public class User extends BaseEntity
 {
-    @Column(name = "username", length = 50, nullable = false)
+    @Column(name = "username", length = 50, nullable = false, unique = true)
     private String username;
 
     @Column(name = "password", length = 255, nullable = false)

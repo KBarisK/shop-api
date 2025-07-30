@@ -12,6 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tax extends BaseEntity{
-    @Column(name = "tax_name", length = 50, nullable = false)
+    @Column(name = "tax_name", length = 50, nullable = false, unique=true)
     private String taxName;
 }
