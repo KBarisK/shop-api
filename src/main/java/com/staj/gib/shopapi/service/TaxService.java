@@ -1,7 +1,7 @@
 package com.staj.gib.shopapi.service;
 
+import com.staj.gib.shopapi.exception.NotFoundException;
 import com.staj.gib.shopapi.exception.TaxAlreadyExistsException;
-import com.staj.gib.shopapi.exception.TaxNotFoundException;
 import com.staj.gib.shopapi.entity.Tax;
 import com.staj.gib.shopapi.entity.dto.TaxRequest;
 import com.staj.gib.shopapi.entity.dto.TaxResponse;
@@ -40,13 +40,13 @@ public class TaxService {
     @Transactional(readOnly = true)
     public TaxResponse getTaxById(UUID id) {
         return repository.findById(id).map(TaxResponse::fromEntity)
-                .orElseThrow(() -> new TaxNotFoundException(id));
+                .orElseThrow(() -> new NotFoundException(id));
 
     }
 
     public void deleteTaxById(UUID id){
         if (!repository.existsById(id)) {
-            throw new TaxNotFoundException(id);
+            throw new NotFoundException(id);
         }
         repository.deleteById(id);
     }
@@ -63,7 +63,7 @@ public class TaxService {
                     tax.setTaxName(request.getTaxName());
                     return TaxResponse.fromEntity(repository.save(tax));
                 })
-                .orElseThrow(() -> new TaxNotFoundException(id));
+                .orElseThrow(() -> new NotFoundException(id));
     }
 
 }

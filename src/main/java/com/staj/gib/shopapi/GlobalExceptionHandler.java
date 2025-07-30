@@ -1,14 +1,10 @@
 package com.staj.gib.shopapi;
 
+import com.staj.gib.shopapi.exception.NotFoundException;
 import com.staj.gib.shopapi.exception.InvalidPasswordException;
 import com.staj.gib.shopapi.exception.TaxAlreadyExistsException;
-import com.staj.gib.shopapi.exception.TaxNotFoundException;
-import com.staj.gib.shopapi.exception.UserNotFoundException;
-import jakarta.annotation.Priority;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,17 +19,11 @@ public class GlobalExceptionHandler {
         return "The resource was modified by another user. Please refresh and try again.";
     }
 
-    @ExceptionHandler(TaxNotFoundException.class)
+    @ExceptionHandler(NotFoundException.class)
     // issue HTTP 404
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String taxNotFoundHandler(TaxNotFoundException ex) {
+    public String entityNotFoundHnadler(NotFoundException ex) {
 
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleUserNotFound(UserNotFoundException ex) {
         return ex.getMessage();
     }
 
