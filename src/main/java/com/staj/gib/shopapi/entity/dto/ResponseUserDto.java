@@ -16,7 +16,6 @@ public class ResponseUserDto implements Serializable {
     UUID id;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
-    Integer version;
     String username;
     UserType userType;
 }
