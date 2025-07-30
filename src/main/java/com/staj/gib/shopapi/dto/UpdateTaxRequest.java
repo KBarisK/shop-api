@@ -1,0 +1,24 @@
+package com.staj.gib.shopapi.dto;
+
+import com.staj.gib.shopapi.entity.Tax;
+import lombok.Value;
+import java.io.Serializable;
+import java.util.UUID;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+@Value  // similar to @Data but immutable
+public class UpdateTaxRequest implements Serializable {
+    @NotBlank
+    UUID id;
+
+    // not null and size > 0
+    @NotBlank(message = "Tax name is required")
+    @Size(max = 50, message = "Tax name must not exceed 50 characters")
+    String taxName;
+
+    public Tax toEntity(){
+        return new Tax(taxName);
+    }
+}

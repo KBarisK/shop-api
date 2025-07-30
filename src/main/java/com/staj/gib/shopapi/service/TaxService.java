@@ -1,5 +1,6 @@
 package com.staj.gib.shopapi.service;
 
+import com.staj.gib.shopapi.dto.UpdateTaxRequest;
 import com.staj.gib.shopapi.entity.Tax;
 import com.staj.gib.shopapi.dto.TaxRequest;
 import com.staj.gib.shopapi.dto.TaxResponse;
@@ -46,13 +47,13 @@ public class TaxService {
         repository.deleteById(id);
     }
 
-    public TaxResponse replaceTax(TaxRequest request, UUID id) {
-        return repository.findById(id)
+    public TaxResponse replaceTax(UpdateTaxRequest request) {
+        return repository.findById(request.getId())
                 .map(tax -> {
                     tax.setTaxName(request.getTaxName());
                     return TaxResponse.fromEntity(repository.save(tax));
                 })
-                .orElseThrow(() -> new ResourceNotFoundException("Tax", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Tax", request.getId()));
     }
 
 }

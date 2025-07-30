@@ -2,6 +2,7 @@ package com.staj.gib.shopapi.controller;
 
 import com.staj.gib.shopapi.dto.TaxRequest;
 import com.staj.gib.shopapi.dto.TaxResponse;
+import com.staj.gib.shopapi.dto.UpdateTaxRequest;
 import com.staj.gib.shopapi.service.TaxService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 // https://spring.io/guides/tutorials/rest
 
@@ -36,9 +39,9 @@ public class TaxController {
         return service.getTaxById(id);
     }
 
-    @PutMapping("/{id}")
-    public TaxResponse replaceTax(@Valid @RequestBody TaxRequest newTax, @PathVariable UUID id) {
-        return service.replaceTax(newTax, id);
+    @PutMapping
+    public TaxResponse replaceTax(@Valid @RequestBody UpdateTaxRequest newTax) {
+        return service.replaceTax(newTax);
     }
 
     @DeleteMapping("/{id}")
