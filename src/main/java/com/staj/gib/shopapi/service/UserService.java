@@ -5,7 +5,7 @@ import com.staj.gib.shopapi.entity.dto.CreateUserDto;
 import com.staj.gib.shopapi.entity.dto.ResponseUserDto;
 import com.staj.gib.shopapi.entity.dto.UpdateUserDto;
 import com.staj.gib.shopapi.exception.InvalidPasswordException;
-import com.staj.gib.shopapi.exception.NotFoundException;
+import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public ResponseUserDto getUser(UUID userID) throws NotFoundException {
+    public ResponseUserDto getUser(UUID userID) {
         return userRepository.findById(userID)
                 .map(user -> new ResponseUserDto(
                         user.getId(),
@@ -28,7 +28,7 @@ public class UserService {
                         user.getVersion(),
                         user.getUsername(),
                         user.getUserType()
-                )).orElseThrow(() -> new NotFoundException("User not found with id: " + userID));
+                )).orElseThrow(() -> new ResourceNotFoundException("User", userID));
     }
 
     public ResponseUserDto saveUser(CreateUserDto createUserDto) throws InvalidPasswordException {
@@ -57,7 +57,7 @@ public class UserService {
         }
 
         User user = userRepository.findById(updateUserDto.getId()).orElseThrow(
-                () -> new NotFoundException("User not found with id: " + updateUserDto.getId()));
+                () -> new ResourceNotFoundException("User", updateUserDto.getId()));
         user.setUsername(updateUserDto.getUsername());
         user.setPassword(updateUserDto.getPassword());
         User updatedUser = userRepository.save(user);

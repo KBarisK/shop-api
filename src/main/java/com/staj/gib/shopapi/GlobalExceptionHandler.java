@@ -1,8 +1,8 @@
 package com.staj.gib.shopapi;
 
-import com.staj.gib.shopapi.exception.NotFoundException;
 import com.staj.gib.shopapi.exception.InvalidPasswordException;
-import com.staj.gib.shopapi.exception.TaxAlreadyExistsException;
+import com.staj.gib.shopapi.exception.ResourceNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,14 +15,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OptimisticLockingFailureException.class)
     // issue HTTP 409
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String optimisticLockingFailureHandler(OptimisticLockingFailureException ex) {
+    public String handleOptimisticLockingFailureException(OptimisticLockingFailureException ex) {
         return "The resource was modified by another user. Please refresh and try again.";
     }
 
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        // todo check the reason?
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
     // issue HTTP 404
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String entityNotFoundHnadler(NotFoundException ex) {
+    public String entityNotFoundHandler(ResourceNotFoundException ex) {
 
         return ex.getMessage();
     }
@@ -33,9 +40,5 @@ public class GlobalExceptionHandler {
         return ex.getMessage();
     }
 
-    @ExceptionHandler(TaxAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleTaxAlreadyExists(TaxAlreadyExistsException ex) {
-        return ex.getMessage();
-    }
+
 }
