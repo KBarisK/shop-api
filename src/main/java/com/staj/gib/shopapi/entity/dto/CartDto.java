@@ -1,21 +1,17 @@
 package com.staj.gib.shopapi.entity.dto;
 
-import com.staj.gib.shopapi.entity.User;
-import com.staj.gib.shopapi.enums.UserType;
+import com.staj.gib.shopapi.entity.CartItem;
 import lombok.Value;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
-/**
- * DTO for {@link User}
- */
 @Value
-public class ResponseUserDto implements Serializable {
+public class CartDto implements Serializable {
+
     UUID id;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
-    String username;
-    UserType userType;
+    List<CartItem> cartItems;
 }
