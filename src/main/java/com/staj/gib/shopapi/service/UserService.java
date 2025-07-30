@@ -1,10 +1,10 @@
 package com.staj.gib.shopapi.service;
 
 import com.staj.gib.shopapi.entity.User;
-import com.staj.gib.shopapi.entity.dto.CreateUserDto;
-import com.staj.gib.shopapi.entity.dto.ResponseUserDto;
-import com.staj.gib.shopapi.entity.dto.UpdateUserDto;
-import com.staj.gib.shopapi.entity.dto.mapper.UserMapper;
+import com.staj.gib.shopapi.dto.CreateUserDto;
+import com.staj.gib.shopapi.dto.ResponseUserDto;
+import com.staj.gib.shopapi.dto.UpdateUserDto;
+import com.staj.gib.shopapi.dto.mapper.UserMapper;
 import com.staj.gib.shopapi.exception.InvalidPasswordException;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.UserRepository;

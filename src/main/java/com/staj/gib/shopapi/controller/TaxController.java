@@ -1,8 +1,7 @@
 package com.staj.gib.shopapi.controller;
 
-import com.staj.gib.shopapi.entity.dto.TaxRequest;
-import com.staj.gib.shopapi.entity.dto.TaxResponse;
-import com.staj.gib.shopapi.repository.TaxRepository;
+import com.staj.gib.shopapi.dto.TaxRequest;
+import com.staj.gib.shopapi.dto.TaxResponse;
 import com.staj.gib.shopapi.service.TaxService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

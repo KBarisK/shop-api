@@ -1,4 +1,4 @@
-package com.staj.gib.shopapi.entity.dto;
+package com.staj.gib.shopapi.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Value;

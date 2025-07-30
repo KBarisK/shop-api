@@ -1,4 +1,4 @@
-package com.staj.gib.shopapi.entity.dto;
+package com.staj.gib.shopapi.dto;
 
 import com.staj.gib.shopapi.entity.User;
 import jakarta.validation.constraints.NotBlank;

@@ -1,8 +1,8 @@
 package com.staj.gib.shopapi.service;
 
 import com.staj.gib.shopapi.entity.Tax;
-import com.staj.gib.shopapi.entity.dto.TaxRequest;
-import com.staj.gib.shopapi.entity.dto.TaxResponse;
+import com.staj.gib.shopapi.dto.TaxRequest;
+import com.staj.gib.shopapi.dto.TaxResponse;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.TaxRepository;
 
