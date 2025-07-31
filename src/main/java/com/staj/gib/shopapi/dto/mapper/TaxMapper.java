@@ -1,4 +1,3 @@
-// package should match your existing structure, e.g. dto.mapper or mapper
 package com.staj.gib.shopapi.dto.mapper;
 
 import com.staj.gib.shopapi.entity.Tax;
