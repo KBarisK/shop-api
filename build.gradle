@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.staj.gib'
-version = '0.0.1-SNAPSHOT'
+version = "${projectVersion}"
 
 java {
     toolchain {
