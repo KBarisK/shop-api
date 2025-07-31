@@ -22,6 +22,6 @@ public class ProductCategoryTax extends BaseEntity{
     @JoinColumn(name="tax_id")
     private Tax tax;
 
-    @Column(name = "tax_percent", precision = 6, scale = 3)
+    @Column(name = "tax_percent", precision = 3, scale = 3)
     private BigDecimal taxPercent;
 }
