@@ -1,4 +1,4 @@
-package com.staj.gib.shopapi.dto;
+package com.staj.gib.shopapi.dto.response;
 
 import com.staj.gib.shopapi.entity.User;
 import com.staj.gib.shopapi.enums.UserType;

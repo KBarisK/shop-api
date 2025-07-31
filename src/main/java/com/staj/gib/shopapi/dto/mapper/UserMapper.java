@@ -1,9 +1,9 @@
 package com.staj.gib.shopapi.dto.mapper;
 
 import com.staj.gib.shopapi.entity.User;
-import com.staj.gib.shopapi.dto.CreateUserDto;
-import com.staj.gib.shopapi.dto.ResponseUserDto;
-import com.staj.gib.shopapi.dto.UpdateUserDto;
+import com.staj.gib.shopapi.dto.request.CreateUserDto;
+import com.staj.gib.shopapi.dto.response.ResponseUserDto;
+import com.staj.gib.shopapi.dto.request.UpdateUserDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

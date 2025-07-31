@@ -4,7 +4,7 @@ import com.staj.gib.shopapi.entity.Cart;
 import com.staj.gib.shopapi.entity.CartItem;
 import com.staj.gib.shopapi.entity.Product;
 import com.staj.gib.shopapi.entity.User;
-import com.staj.gib.shopapi.dto.CartDto;
+import com.staj.gib.shopapi.dto.response.CartDto;
 import com.staj.gib.shopapi.enums.CartStatus;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.CartRepository;

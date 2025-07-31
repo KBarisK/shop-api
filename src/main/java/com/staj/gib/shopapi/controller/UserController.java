@@ -1,8 +1,8 @@
 package com.staj.gib.shopapi.controller;
 
-import com.staj.gib.shopapi.dto.CreateUserDto;
-import com.staj.gib.shopapi.dto.ResponseUserDto;
-import com.staj.gib.shopapi.dto.UpdateUserDto;
+import com.staj.gib.shopapi.dto.request.CreateUserDto;
+import com.staj.gib.shopapi.dto.response.ResponseUserDto;
+import com.staj.gib.shopapi.dto.request.UpdateUserDto;
 import com.staj.gib.shopapi.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
