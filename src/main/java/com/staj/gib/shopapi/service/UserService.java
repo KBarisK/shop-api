@@ -41,9 +41,5 @@ public class UserService {
         return userMapper.userToResponseUserDto(updatedUser);
     }
 
-    public User getEntityById(UUID id) {
-        return userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User", id));
-    }
-
 }
 

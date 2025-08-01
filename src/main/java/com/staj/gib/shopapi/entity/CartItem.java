@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Entity
 @Table(name = "cart_item")
@@ -24,6 +23,9 @@ public class CartItem extends BaseEntity {
 
     @Column(name = "price", precision = 18, scale = 2)
     private BigDecimal price;
+
+    @Column(name = "pre_tax_price", precision = 18, scale = 2)
+    private BigDecimal preTaxPrice;
 
     @Column(name = "quantity")
     private short quantity;
