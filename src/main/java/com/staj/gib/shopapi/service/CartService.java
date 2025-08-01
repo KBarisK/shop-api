@@ -68,11 +68,12 @@ public class CartService {
             CategoryResponse categoryResponse = this.categoryService.getCategory(productResponse.getCategoryId());
             List<CategoryTaxResponse> taxes = categoryResponse.getTaxes();
             BigDecimal priceAfterTax = productResponse.getPrice();
+            BigDecimal preTaxPrice = productResponse.getPrice();
             for(CategoryTaxResponse tax : taxes) {
-                priceAfterTax = priceAfterTax.add(taxService.calculateTax(priceAfterTax, tax));
+                priceAfterTax = priceAfterTax.add(taxService.calculateTax(preTaxPrice, tax));
             }
             Product product = this.entityManager.getReference(Product.class,productResponse.getId());
-            CartItem newItem = new CartItem(cart, product, priceAfterTax,productResponse.getPrice(), cartRepuest.getQuantity());
+            CartItem newItem = new CartItem(cart, product, priceAfterTax, preTaxPrice, cartRepuest.getQuantity());
             cart.getCartItems().add(newItem);
         }
         cartRepository.save(cart);
