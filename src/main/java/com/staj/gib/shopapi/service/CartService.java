@@ -2,6 +2,9 @@ package com.staj.gib.shopapi.service;
 
 import com.staj.gib.shopapi.dto.request.CartRepuest;
 import com.staj.gib.shopapi.dto.response.CartDto;
+import com.staj.gib.shopapi.dto.response.CategoryResponse;
+import com.staj.gib.shopapi.dto.response.CategoryTaxResponse;
+import com.staj.gib.shopapi.dto.response.ProductResponse;
 import com.staj.gib.shopapi.entity.Cart;
 import com.staj.gib.shopapi.entity.CartItem;
 import com.staj.gib.shopapi.entity.Product;
@@ -10,13 +13,14 @@ import com.staj.gib.shopapi.entity.dto.mapper.CartMapper;
 import com.staj.gib.shopapi.enums.CartStatus;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.CartRepository;
-import com.staj.gib.shopapi.repository.ProductRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,10 +29,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CartService {
 
-    private final ProductRepository productRepository; //TODO CHANGE IT TO SERVICE WHEN AVAILABLE
+    private final TaxService taxService;
+    private final CategoryService categoryService;
+    private final ProductService productService;
+
     private final CartRepository cartRepository;
-    private final EntityManager entityManager;
     private final CartMapper cartMapper;
+
+    private final EntityManager entityManager;
 
 
     public CartDto getActiveCart(UUID userId) {
@@ -43,26 +51,28 @@ public class CartService {
             Cart savedCart = this.cartRepository.save(newCart);
             return this.cartMapper.cartToCartDto(savedCart);
         }
-
     }
 
     public void addItemToCart(CartRepuest cartRepuest) {
-        Product product = productRepository.findById(cartRepuest.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product",cartRepuest.getProductId()));
+        ProductResponse productResponse = productService.getProduct(cartRepuest.getProductId());
         Cart cart = cartRepository.findById(cartRepuest.getCartId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart",cartRepuest.getCartId()));
 
-        Optional<CartItem> existingItem = cart.getCartItems().stream()
-                .filter(item -> item.getProduct().getId().equals(cartRepuest.getProductId()))
-                .findFirst();
+        Optional<CartItem> existingItem = cart.getCartItems().stream().filter(cartItem -> cartItem.getProduct().getId().equals(cartRepuest.getProductId())).findFirst();
 
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
             short newQuantity = (short) (item.getQuantity() + cartRepuest.getQuantity());
             item.setQuantity(newQuantity);
         } else {
-            //TODO YOU NEED TO CALCULATE TAX BEFORE ADDING THIS
-            CartItem newItem = new CartItem(cart, product, product.getPrice(),product.getPrice(), cartRepuest.getQuantity());
+            CategoryResponse categoryResponse = this.categoryService.getCategory(productResponse.getCategoryId());
+            List<CategoryTaxResponse> taxes = categoryResponse.getTaxes();
+            BigDecimal priceAfterTax = productResponse.getPrice();
+            for(CategoryTaxResponse tax : taxes) {
+                priceAfterTax = priceAfterTax.add(taxService.calculateTax(priceAfterTax, tax));
+            }
+            Product product = this.entityManager.getReference(Product.class,productResponse.getId());
+            CartItem newItem = new CartItem(cart, product, priceAfterTax,productResponse.getPrice(), cartRepuest.getQuantity());
             cart.getCartItems().add(newItem);
         }
         cartRepository.save(cart);
