@@ -1,4 +1,4 @@
-package com.staj.gib.shopapi.entity.dto;
+package com.staj.gib.shopapi.dto.request;
 
 import lombok.Value;
 

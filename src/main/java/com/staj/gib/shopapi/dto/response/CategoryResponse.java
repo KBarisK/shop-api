@@ -1,17 +1,15 @@
-package com.staj.gib.shopapi.entity.dto;
+package com.staj.gib.shopapi.dto.response;
 
 import lombok.Value;
-
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Value
-public class CartDto implements Serializable {
-
+public class CategoryResponse {
     UUID id;
+    String categoryName;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
-    List<CartItemDto> cartItems;
+    List<CategoryTaxResponse> taxes;
 }

@@ -1,4 +1,4 @@
-package com.staj.gib.shopapi.entity.dto;
+package com.staj.gib.shopapi.dto.response;
 
 import com.staj.gib.shopapi.entity.Tax;
 import lombok.Value;
@@ -16,8 +16,4 @@ public class TaxResponse implements Serializable {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     String taxName;
-
-    public static TaxResponse fromEntity(Tax tax){
-        return new TaxResponse(tax.getId(), tax.getCreatedAt(), tax.getUpdatedAt(), tax.getTaxName());
-    }
 }

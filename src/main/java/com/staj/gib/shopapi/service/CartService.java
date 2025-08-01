@@ -1,11 +1,11 @@
 package com.staj.gib.shopapi.service;
 
+import com.staj.gib.shopapi.dto.request.CartRepuest;
+import com.staj.gib.shopapi.dto.response.CartDto;
 import com.staj.gib.shopapi.entity.Cart;
 import com.staj.gib.shopapi.entity.CartItem;
 import com.staj.gib.shopapi.entity.Product;
 import com.staj.gib.shopapi.entity.User;
-import com.staj.gib.shopapi.entity.dto.CartDto;
-import com.staj.gib.shopapi.entity.dto.CartRepuest;
 import com.staj.gib.shopapi.entity.dto.mapper.CartMapper;
 import com.staj.gib.shopapi.enums.CartStatus;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
@@ -16,7 +16,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional

@@ -1,7 +1,7 @@
 package com.staj.gib.shopapi.controller;
 
-import com.staj.gib.shopapi.entity.dto.CartDto;
-import com.staj.gib.shopapi.entity.dto.CartRepuest;
+import com.staj.gib.shopapi.dto.request.CartRepuest;
+import com.staj.gib.shopapi.dto.response.CartDto;
 import com.staj.gib.shopapi.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

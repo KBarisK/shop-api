@@ -1,8 +1,8 @@
 package com.staj.gib.shopapi.controller;
 
-import com.staj.gib.shopapi.entity.dto.TaxRequest;
-import com.staj.gib.shopapi.entity.dto.TaxResponse;
-import com.staj.gib.shopapi.repository.TaxRepository;
+import com.staj.gib.shopapi.dto.request.TaxRequest;
+import com.staj.gib.shopapi.dto.response.TaxResponse;
+import com.staj.gib.shopapi.dto.request.UpdateTaxRequest;
 import com.staj.gib.shopapi.service.TaxService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -37,9 +37,9 @@ public class TaxController {
         return service.getTaxById(id);
     }
 
-    @PutMapping("/{id}")
-    public TaxResponse replaceTax(@Valid @RequestBody TaxRequest newTax, @PathVariable UUID id) {
-        return service.replaceTax(newTax, id);
+    @PutMapping
+    public TaxResponse replaceTax(@Valid @RequestBody UpdateTaxRequest newTax) {
+        return service.replaceTax(newTax);
     }
 
     @DeleteMapping("/{id}")
