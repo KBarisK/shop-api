@@ -46,8 +46,11 @@ public class CartService {
             return this.cartMapper.cartToCartDto(cart);
         }
         else{
-            User user = this.entityManager.getReference(User.class,userId);
-            Cart newCart = new Cart(user,CartStatus.OPEN,new ArrayList<>());
+            Cart newCart = new Cart();
+            newCart.setUserId(userId);
+            newCart.setStatus(CartStatus.OPEN);
+            newCart.setCartItems(new ArrayList<>());
+
             Cart savedCart = this.cartRepository.save(newCart);
             return this.cartMapper.cartToCartDto(savedCart);
         }
