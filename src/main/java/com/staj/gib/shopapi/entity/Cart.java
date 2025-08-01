@@ -1,11 +1,10 @@
 package com.staj.gib.shopapi.entity;
 
+import com.staj.gib.shopapi.enums.CartStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import com.staj.gib.shopapi.enums.CartStatus;
-import java.time.LocalDateTime;
+
 import java.util.List;
-import java.util.UUID;
 
 
 @Entity
@@ -23,6 +22,6 @@ public class Cart extends BaseEntity {
     @Column(name="status")
     private CartStatus status;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cart")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems;
 }
