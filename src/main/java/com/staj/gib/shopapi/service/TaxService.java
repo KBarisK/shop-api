@@ -1,17 +1,19 @@
 package com.staj.gib.shopapi.service;
 
-import com.staj.gib.shopapi.dto.request.UpdateTaxRequest;
-import com.staj.gib.shopapi.entity.Tax;
+import com.staj.gib.shopapi.dto.mapper.TaxMapper;
 import com.staj.gib.shopapi.dto.request.TaxRequest;
+import com.staj.gib.shopapi.dto.request.UpdateTaxRequest;
+import com.staj.gib.shopapi.dto.response.CategoryTaxResponse;
 import com.staj.gib.shopapi.dto.response.TaxResponse;
+import com.staj.gib.shopapi.entity.Tax;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.TaxRepository;
-import com.staj.gib.shopapi.dto.mapper.TaxMapper;
-
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,6 +58,11 @@ public class TaxService {
         mapper.updateFromDto(request, tax);
         tax = repository.save(tax);
         return mapper.toResponse(tax);
+    }
+
+    public BigDecimal calculateTax(BigDecimal amount, CategoryTaxResponse categoryTaxResponse) {
+        BigDecimal taxPercent = categoryTaxResponse.getTaxPercent();
+        return amount.multiply(taxPercent).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP);
     }
 
 }
