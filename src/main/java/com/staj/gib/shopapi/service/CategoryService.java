@@ -1,19 +1,23 @@
 package com.staj.gib.shopapi.service;
 
 import com.staj.gib.shopapi.dto.mapper.CategoryMapper;
+import com.staj.gib.shopapi.dto.mapper.TaxMapper;
 import com.staj.gib.shopapi.dto.request.CategoryTaxRequest;
 import com.staj.gib.shopapi.dto.request.CreateCategoryRequest;
 import com.staj.gib.shopapi.dto.request.UpdateCategoryRequest;
 import com.staj.gib.shopapi.dto.response.CategoryResponse;
-import com.staj.gib.shopapi.entity.*;
+import com.staj.gib.shopapi.entity.ProductCategory;
+import com.staj.gib.shopapi.entity.ProductCategoryTax;
+import com.staj.gib.shopapi.entity.Tax;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.ProductCategoryRepository;
-import jakarta.persistence.EntityManager;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -21,7 +25,7 @@ import java.util.*;
 public class CategoryService {
     private final ProductCategoryRepository repository;
     private final CategoryMapper mapper;
-    private final EntityManager entityManager;
+    private final TaxMapper taxMapper;
 
     public CategoryResponse getCategory(UUID categoryId) {
         ProductCategory category = repository.findById(categoryId).orElseThrow(()
@@ -41,7 +45,7 @@ public class CategoryService {
     public CategoryResponse createCategory(CreateCategoryRequest request) {
         ProductCategory category = new ProductCategory(request.getCategoryName(), new ArrayList<>());
         for(CategoryTaxRequest c : request.getTaxes()){
-            Tax taxReference = entityManager.getReference(Tax.class, c.getTaxId());
+            Tax taxReference = this.taxMapper.getFromId(c.getTaxId());
             category.getTaxes().add(new ProductCategoryTax(category, taxReference, c.getTaxPercent()));
         }
 
@@ -60,7 +64,7 @@ public class CategoryService {
             category.getTaxes().clear();
 
             for(CategoryTaxRequest taxRequest : request.getTaxes()) {
-                Tax taxReference = entityManager.getReference(Tax.class, taxRequest.getTaxId());
+                Tax taxReference = this.taxMapper.getFromId(taxRequest.getTaxId());
                 ProductCategoryTax categoryTax = new ProductCategoryTax(category, taxReference, taxRequest.getTaxPercent());
                 category.getTaxes().add(categoryTax);
             }

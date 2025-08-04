@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @Entity
@@ -15,8 +16,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Cart extends BaseEntity {
+    @Column(name="user_id", nullable = false)
+    private UUID userId;
+
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="user_id", insertable = false, updatable = false)
     private User user;
 
     @Column(name="status")
