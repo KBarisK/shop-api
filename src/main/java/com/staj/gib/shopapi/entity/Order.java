@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "\"order\"")  // order is reserved in postgresql
@@ -37,4 +38,8 @@ public class Order extends BaseEntity{
     @OneToOne(mappedBy = "order",
             cascade = CascadeType.REMOVE)
     private InstallmentPayment installmentPayment;
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems;
 }

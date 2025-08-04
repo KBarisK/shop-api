@@ -2,9 +2,7 @@ package com.staj.gib.shopapi.service;
 
 import com.staj.gib.shopapi.dto.mapper.OrderMapper;
 import com.staj.gib.shopapi.dto.request.OrderRequest;
-import com.staj.gib.shopapi.dto.response.CartDto;
-import com.staj.gib.shopapi.dto.response.CartItemDto;
-import com.staj.gib.shopapi.dto.response.OrderResponse;
+import com.staj.gib.shopapi.dto.response.*;
 import com.staj.gib.shopapi.entity.Order;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.OrderRepository;
@@ -13,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,19 +20,23 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OrderService {
 
+    private static final int SCALE = 2;
+    private static final RoundingMode ROUNDING = RoundingMode.HALF_UP;
+
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 
+
     private final CartService cartService;
+    private final TaxService taxService;
+    private final CategoryService categoryService;
 
     public OrderResponse placeOrder(OrderRequest orderRequest) {
         this.cartService.removeAllItemsFromCart(orderRequest.getCartId());
         CartDto cart = this.cartService.getCart(orderRequest.getCartId());
         List<CartItemDto> cartItems = cart.getCartItems();
-        BigDecimal totalPrice = BigDecimal.ZERO;
-        for (CartItemDto cartItem : cartItems) {
+        BigDecimal totalAmount = calculateTotalAmount(cartItems);
 
-        }
         Order order = new Order();
 
 
@@ -46,6 +49,32 @@ public class OrderService {
         return this.orderMapper.toOrderResponse(order);
     }
 
+    private BigDecimal calculateTotalAmount(List<CartItemDto> cartItems) {
+        BigDecimal totalPrice = BigDecimal.ZERO;
+
+        for (CartItemDto cartItem : cartItems) {
+            ProductResponse product = cartItem.getProduct();
+            BigDecimal productPrice = product.getPrice().setScale(SCALE, ROUNDING);
+            BigDecimal totalItemPrice = productPrice;
+
+            CategoryResponse category = categoryService.getCategory(product.getCategoryId());
+            List<CategoryTaxResponse> categoryTaxResponse = category.getTaxes();
+            List<TaxDetailDto> taxDetails = taxService.calculateTaxBreakdown(productPrice, categoryTaxResponse);
+
+            for (TaxDetailDto taxDetail : taxDetails) {
+                totalItemPrice = totalItemPrice.add(
+                        taxDetail.getAmount()
+                );
+            }
+
+            BigDecimal itemTotalWithQuantity = totalItemPrice
+                    .multiply(BigDecimal.valueOf(cartItem.getQuantity()))
+                    .setScale(SCALE, ROUNDING);
+
+            totalPrice = totalPrice.add(itemTotalWithQuantity);
+        }
+        return totalPrice.setScale(SCALE, ROUNDING);
+    }
 
 
 }
