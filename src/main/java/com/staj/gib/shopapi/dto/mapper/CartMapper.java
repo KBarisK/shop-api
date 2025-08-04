@@ -4,7 +4,6 @@ import com.staj.gib.shopapi.dto.response.CartDto;
 import com.staj.gib.shopapi.dto.response.CartItemDto;
 import com.staj.gib.shopapi.entity.Cart;
 import com.staj.gib.shopapi.entity.CartItem;
-import com.staj.gib.shopapi.enums.CartStatus;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -14,7 +13,6 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 public interface CartMapper{
 
-    @Mapping(target = "productId", source = "product.id")
     CartItemDto cartItemToCartItemDto(CartItem cartItem);
 
     List<CartItemDto> cartItemsToCartItemDtos(List<CartItem> cartItems);
@@ -22,5 +20,5 @@ public interface CartMapper{
     CartDto cartToCartDto(Cart cart);
 
     @Mapping(target = "cartItems", expression = "java(new java.util.ArrayList<>())")
-    Cart createCartFromRequest(UUID userId, CartStatus status);
+    Cart createCartFromRequest(UUID userId);
 }

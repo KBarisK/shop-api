@@ -3,23 +3,17 @@ package com.staj.gib.shopapi.service;
 import com.staj.gib.shopapi.dto.mapper.ProductMapper;
 import com.staj.gib.shopapi.dto.request.CartRepuest;
 import com.staj.gib.shopapi.dto.response.CartDto;
-import com.staj.gib.shopapi.dto.response.CategoryResponse;
-import com.staj.gib.shopapi.dto.response.CategoryTaxResponse;
-import com.staj.gib.shopapi.dto.response.ProductResponse;
 import com.staj.gib.shopapi.entity.Cart;
 import com.staj.gib.shopapi.entity.CartItem;
 import com.staj.gib.shopapi.entity.Product;
 import com.staj.gib.shopapi.entity.dto.mapper.CartMapper;
-import com.staj.gib.shopapi.enums.CartStatus;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.CartRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,10 +22,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CartService {
 
-    private final TaxService taxService;
-    private final CategoryService categoryService;
-    private final ProductService productService;
-
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
 
@@ -39,20 +29,12 @@ public class CartService {
 
 
     public CartDto getActiveCart(UUID userId) {
-        Optional<Cart> optionalCart = this.cartRepository.findByUser_IdAndStatus(userId, CartStatus.OPEN);
-        if (optionalCart.isPresent()) {
-            Cart cart = optionalCart.get();
-            return this.cartMapper.cartToCartDto(cart);
-        }
-        else{
-            Cart newCart = this.cartMapper.createCartFromRequest(userId, CartStatus.OPEN);
-            Cart savedCart = this.cartRepository.save(newCart);
-            return this.cartMapper.cartToCartDto(savedCart);
-        }
+        Cart cart = this.cartRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart for User",userId));
+        return this.cartMapper.cartToCartDto(cart);
     }
 
-    public void addItemToCart(CartRepuest cartRepuest) {
-        ProductResponse productResponse = productService.getProduct(cartRepuest.getProductId());
+    public CartDto addItemToCart(CartRepuest cartRepuest) {
         Cart cart = cartRepository.findById(cartRepuest.getCartId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart",cartRepuest.getCartId()));
 
@@ -63,21 +45,15 @@ public class CartService {
             short newQuantity = (short) (item.getQuantity() + cartRepuest.getQuantity());
             item.setQuantity(newQuantity);
         } else {
-            CategoryResponse categoryResponse = this.categoryService.getCategory(productResponse.getCategoryId());
-            List<CategoryTaxResponse> taxes = categoryResponse.getTaxes();
-            BigDecimal priceAfterTax = productResponse.getPrice();
-            BigDecimal preTaxPrice = productResponse.getPrice();
-            for(CategoryTaxResponse tax : taxes) {
-                priceAfterTax = priceAfterTax.add(taxService.calculateTax(preTaxPrice, tax));
-            }
             Product product = this.productMapper.productFromId(cartRepuest.getProductId());
-            CartItem newItem = new CartItem(cart, product, priceAfterTax, preTaxPrice, cartRepuest.getQuantity());
+            CartItem newItem = new CartItem(cart, product, cartRepuest.getQuantity());
             cart.getCartItems().add(newItem);
         }
-        cartRepository.save(cart);
+        Cart savedCart = cartRepository.save(cart);
+        return this.cartMapper.cartToCartDto(savedCart);
     }
 
-    public void removeItemFromCart(CartRepuest cartRepuest) {
+    public CartDto removeItemFromCart(CartRepuest cartRepuest) {
         Cart cart = this.cartRepository.findById(cartRepuest.getCartId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart",cartRepuest.getCartId()));
         cart.getCartItems().removeIf(item -> { //true means delete false means keep the item.
@@ -92,13 +68,25 @@ public class CartService {
             }
             return false;
         });
-        cartRepository.save(cart);
+        Cart savedCart = cartRepository.save(cart);
+        return this.cartMapper.cartToCartDto(savedCart);
     }
 
     public void removeAllItemsFromCart(UUID cartId) {
         Cart cart  = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart",cartId));
         cart.setCartItems(new ArrayList<>());
         cartRepository.save(cart);
+    }
+
+    public CartDto getCart(UUID cartId) {
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart",cartId));
+        return this.cartMapper.cartToCartDto(cart);
+    }
+
+    public void createCart(UUID userId) {
+        Cart newCart = this.cartMapper.createCartFromRequest(userId);
+        this.cartRepository.save(newCart);
     }
 
 

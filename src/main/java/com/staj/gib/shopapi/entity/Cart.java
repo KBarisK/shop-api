@@ -1,6 +1,5 @@
 package com.staj.gib.shopapi.entity;
 
-import com.staj.gib.shopapi.enums.CartStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,9 +21,6 @@ public class Cart extends BaseEntity {
     @ManyToOne
     @JoinColumn(name="user_id", insertable = false, updatable = false)
     private User user;
-
-    @Column(name="status")
-    private CartStatus status;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems;

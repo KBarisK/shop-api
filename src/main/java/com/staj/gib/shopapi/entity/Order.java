@@ -1,11 +1,11 @@
 package com.staj.gib.shopapi.entity;
-import jakarta.persistence.*;
-import lombok.*;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
+
 import com.staj.gib.shopapi.enums.OrderStatus;
 import com.staj.gib.shopapi.enums.PaymentMethod;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "\"order\"")  // order is reserved in postgresql
@@ -16,8 +16,8 @@ import com.staj.gib.shopapi.enums.PaymentMethod;
 @AllArgsConstructor
 public class Order extends BaseEntity{
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="cart_id")
-    private Cart cart;
+    @JoinColumn(name="user_id")
+    private User user;
 
     @Column(name = "status")
     private OrderStatus status;
