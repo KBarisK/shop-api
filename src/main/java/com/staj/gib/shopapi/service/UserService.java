@@ -21,6 +21,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    private final CartService cartService;
+
     public ResponseUserDto getUser(UUID userID) {
         User user = userRepository.findById(userID).orElseThrow(() -> new ResourceNotFoundException("User",userID));
         return userMapper.userToResponseUserDto(user);
@@ -30,6 +32,7 @@ public class UserService {
         User user = userMapper.createUserDtoToUser(createUserDto);
         user.setUserType(UserType.CUSTOMER);
         User savedUser = userRepository.save(user);
+        this.cartService.createCart(savedUser.getId());
         return userMapper.userToResponseUserDto(savedUser);
     }
 

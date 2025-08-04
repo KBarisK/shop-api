@@ -21,13 +21,13 @@ public class CartController {
     }
 
     @DeleteMapping("/remove-item")
-    void removeItemFromCart(CartRepuest cartRepuest) {
-        this.cartService.removeItemFromCart(cartRepuest);
+    CartDto removeItemFromCart(CartRepuest cartRepuest) {
+        return this.cartService.removeItemFromCart(cartRepuest);
     }
 
     @PostMapping("/add-item")
-    void addItemToCart(CartRepuest cartRepuest) {
-        this.cartService.addItemToCart(cartRepuest);
+    CartDto addItemToCart(CartRepuest cartRepuest) {
+        return this.cartService.addItemToCart(cartRepuest);
     }
 
     @DeleteMapping("/remove-all/{cartId}")

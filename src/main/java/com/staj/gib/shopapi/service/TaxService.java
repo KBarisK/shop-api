@@ -4,6 +4,7 @@ import com.staj.gib.shopapi.dto.mapper.TaxMapper;
 import com.staj.gib.shopapi.dto.request.TaxRequest;
 import com.staj.gib.shopapi.dto.request.UpdateTaxRequest;
 import com.staj.gib.shopapi.dto.response.CategoryTaxResponse;
+import com.staj.gib.shopapi.dto.response.TaxDetailDto;
 import com.staj.gib.shopapi.dto.response.TaxResponse;
 import com.staj.gib.shopapi.entity.Tax;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,9 +62,19 @@ public class TaxService {
         return mapper.toResponse(tax);
     }
 
-    public BigDecimal calculateTax(BigDecimal amount, CategoryTaxResponse categoryTaxResponse) {
+    public TaxDetailDto calculateTax(BigDecimal amount, CategoryTaxResponse categoryTaxResponse) {
         BigDecimal taxPercent = categoryTaxResponse.getTaxPercent();
-        return amount.multiply(taxPercent).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP);
+        BigDecimal taxAmount = amount.multiply(taxPercent).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP);
+        return new TaxDetailDto(categoryTaxResponse.getTaxName(), taxAmount);
+    }
+
+    public List<TaxDetailDto> calculateTaxBreakdown(BigDecimal basePrice, List<CategoryTaxResponse> taxes) {
+        List<TaxDetailDto> result = new ArrayList<>();
+        for (CategoryTaxResponse tax : taxes) {
+            TaxDetailDto detail = calculateTax(basePrice, tax);
+            result.add(detail);
+        }
+        return result;
     }
 
 }
