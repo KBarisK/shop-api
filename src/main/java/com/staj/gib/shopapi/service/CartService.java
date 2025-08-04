@@ -1,5 +1,6 @@
 package com.staj.gib.shopapi.service;
 
+import com.staj.gib.shopapi.dto.mapper.ProductMapper;
 import com.staj.gib.shopapi.dto.request.CartRepuest;
 import com.staj.gib.shopapi.dto.response.CartDto;
 import com.staj.gib.shopapi.dto.response.CategoryResponse;
@@ -8,12 +9,10 @@ import com.staj.gib.shopapi.dto.response.ProductResponse;
 import com.staj.gib.shopapi.entity.Cart;
 import com.staj.gib.shopapi.entity.CartItem;
 import com.staj.gib.shopapi.entity.Product;
-import com.staj.gib.shopapi.entity.User;
 import com.staj.gib.shopapi.entity.dto.mapper.CartMapper;
 import com.staj.gib.shopapi.enums.CartStatus;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.CartRepository;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,7 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
 
-    private final EntityManager entityManager;
+    private final ProductMapper productMapper;
 
 
     public CartDto getActiveCart(UUID userId) {
@@ -46,11 +45,7 @@ public class CartService {
             return this.cartMapper.cartToCartDto(cart);
         }
         else{
-            Cart newCart = new Cart();
-            newCart.setUserId(userId);
-            newCart.setStatus(CartStatus.OPEN);
-            newCart.setCartItems(new ArrayList<>());
-
+            Cart newCart = this.cartMapper.createCartFromRequest(userId, CartStatus.OPEN);
             Cart savedCart = this.cartRepository.save(newCart);
             return this.cartMapper.cartToCartDto(savedCart);
         }
@@ -75,7 +70,7 @@ public class CartService {
             for(CategoryTaxResponse tax : taxes) {
                 priceAfterTax = priceAfterTax.add(taxService.calculateTax(preTaxPrice, tax));
             }
-            Product product = this.entityManager.getReference(Product.class,productResponse.getId());
+            Product product = this.productMapper.productFromId(cartRepuest.getProductId());
             CartItem newItem = new CartItem(cart, product, priceAfterTax, preTaxPrice, cartRepuest.getQuantity());
             cart.getCartItems().add(newItem);
         }

@@ -1,10 +1,15 @@
 package com.staj.gib.shopapi.dto.mapper;
 
-import com.staj.gib.shopapi.entity.Tax;
 import com.staj.gib.shopapi.dto.request.TaxRequest;
 import com.staj.gib.shopapi.dto.request.UpdateTaxRequest;
 import com.staj.gib.shopapi.dto.response.TaxResponse;
-import org.mapstruct.*;
+import com.staj.gib.shopapi.entity.Tax;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+
+import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public interface TaxMapper {
@@ -15,4 +20,6 @@ public interface TaxMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateFromDto(UpdateTaxRequest dto, @MappingTarget Tax tax);
+
+    Tax getFromId(UUID taxId);
 }
