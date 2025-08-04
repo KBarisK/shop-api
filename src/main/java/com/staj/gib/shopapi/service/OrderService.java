@@ -4,6 +4,8 @@ import com.staj.gib.shopapi.dto.mapper.OrderMapper;
 import com.staj.gib.shopapi.dto.request.OrderRequest;
 import com.staj.gib.shopapi.dto.response.*;
 import com.staj.gib.shopapi.entity.Order;
+import com.staj.gib.shopapi.entity.OrderItem;
+import com.staj.gib.shopapi.enums.OrderStatus;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.OrderRepository;
 import jakarta.transaction.Transactional;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,13 +35,30 @@ public class OrderService {
     private final CategoryService categoryService;
 
     public OrderResponse placeOrder(OrderRequest orderRequest) {
-        this.cartService.removeAllItemsFromCart(orderRequest.getCartId());
         CartDto cart = this.cartService.getCart(orderRequest.getCartId());
         List<CartItemDto> cartItems = cart.getCartItems();
         BigDecimal totalAmount = calculateTotalAmount(cartItems);
 
         Order order = new Order();
+        order.setStatus(OrderStatus.ACTIVE);
+        order.setTotalAmount(totalAmount);
+        order.setPaymentMethod(orderRequest.getPaymentMethod());
+        order.setOrderItems(new ArrayList<>());
+        Order savedOrder = this.orderRepository.save(order);
 
+        List<OrderItem> orderItems = cartItems.stream()
+                .map(cartItem -> {
+                    OrderItem orderItem = createOrderItem(cartItem);
+                    orderItem.setOrder(savedOrder);
+                    return orderItem;
+                })
+                .toList();
+
+        savedOrder.setOrderItems(orderItems);
+
+        orderRepository.save(savedOrder);
+
+        this.cartService.removeAllItemsFromCart(orderRequest.getCartId());
 
         return this.orderMapper.toOrderResponse(order);
     }
@@ -53,19 +73,7 @@ public class OrderService {
         BigDecimal totalPrice = BigDecimal.ZERO;
 
         for (CartItemDto cartItem : cartItems) {
-            ProductResponse product = cartItem.getProduct();
-            BigDecimal productPrice = product.getPrice().setScale(SCALE, ROUNDING);
-            BigDecimal totalItemPrice = productPrice;
-
-            CategoryResponse category = categoryService.getCategory(product.getCategoryId());
-            List<CategoryTaxResponse> categoryTaxResponse = category.getTaxes();
-            List<TaxDetailDto> taxDetails = taxService.calculateTaxBreakdown(productPrice, categoryTaxResponse);
-
-            for (TaxDetailDto taxDetail : taxDetails) {
-                totalItemPrice = totalItemPrice.add(
-                        taxDetail.getAmount()
-                );
-            }
+            BigDecimal totalItemPrice = getProductTotalPrice(cartItem);
 
             BigDecimal itemTotalWithQuantity = totalItemPrice
                     .multiply(BigDecimal.valueOf(cartItem.getQuantity()))
@@ -76,5 +84,31 @@ public class OrderService {
         return totalPrice.setScale(SCALE, ROUNDING);
     }
 
+
+    private OrderItem createOrderItem(CartItemDto cartItem) {
+        OrderItem orderItem = orderMapper.cartItemDtoToOrderItem(cartItem);
+        BigDecimal preTaxPrice = cartItem.getProduct().getPrice();
+        BigDecimal price = getProductTotalPrice(cartItem);
+        orderItem.setPrice(price);
+        orderItem.setPreTaxPrice(preTaxPrice);
+        return orderItem;
+    }
+
+    private BigDecimal getProductTotalPrice(CartItemDto cartItem) {
+        ProductResponse product = cartItem.getProduct();
+        BigDecimal productPrice = product.getPrice().setScale(SCALE, ROUNDING);
+        BigDecimal totalItemPrice = productPrice;
+
+        CategoryResponse category = categoryService.getCategory(product.getCategoryId());
+        List<CategoryTaxResponse> categoryTaxResponse = category.getTaxes();
+        List<TaxDetailDto> taxDetails = taxService.calculateTaxBreakdown(productPrice, categoryTaxResponse);
+
+        for (TaxDetailDto taxDetail : taxDetails) {
+            totalItemPrice = totalItemPrice.add(
+                    taxDetail.getAmount()
+            );
+        }
+        return totalItemPrice.setScale(SCALE, ROUNDING);
+    }
 
 }
