@@ -1,10 +1,11 @@
 package com.staj.gib.shopapi.entity;
+
+import com.staj.gib.shopapi.enums.InstallmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import com.staj.gib.shopapi.enums.InstallmentStatus;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 
 @Entity
@@ -15,8 +16,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Installment extends BaseEntity{
+    @Column(name = "installment_payment_id",nullable = false)
+    private String installmentPaymentId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="installment_payment_id")
+    @JoinColumn(name="installment_payment_id", insertable = false, updatable = false)
     private InstallmentPayment installmentPayment;
 
     @Column(name = "amount", precision = 18, scale = 2)
