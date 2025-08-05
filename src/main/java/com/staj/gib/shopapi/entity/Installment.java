@@ -16,11 +16,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Installment extends BaseEntity{
-    @Column(name = "installment_payment_id",nullable = false)
-    private String installmentPaymentId;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="installment_payment_id", insertable = false, updatable = false)
+    @JoinColumn(name="installment_payment_id")
     private InstallmentPayment installmentPayment;
 
     @Column(name = "amount", precision = 18, scale = 2)
