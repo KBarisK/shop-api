@@ -44,7 +44,11 @@ public class OrderService {
     public OrderResponse placeOrder(OrderRequest orderRequest) {
         CartDto cart = this.cartService.getCart(orderRequest.getCartId());
         List<CartItemDto> cartItems = cart.getCartItems();
-        BigDecimal totalAmount = calculateTotalAmount(cartItems);
+        PaymentMethod paymentMethod = orderRequest.getPaymentMethod();
+
+        BigDecimal totalAmount = (paymentMethod == PaymentMethod.PAYMENT_INSTALLMENT) ?
+                calculateTotalAmountWithInterest(cartItems,
+                        orderRequest.getInstallmentMonths()) : calculateTotalAmount(cartItems);
 
         Order order = new Order();
         order.setStatus(OrderStatus.ACTIVE);
@@ -92,6 +96,31 @@ public class OrderService {
         Order order = this.orderRepository.findById(orderId)
                 .orElseThrow(()-> new ResourceNotFoundException("Order", orderId));
         return this.orderMapper.toOrderResponse(order);
+    }
+
+    private BigDecimal calculateTotalAmountWithInterest(List<CartItemDto> cartItems, int installmentCount){
+        BigDecimal totalAmount = calculateTotalAmount(cartItems);
+
+        // Add interest
+        BigDecimal monthlyRate = BigDecimal.valueOf(0.0425);
+
+        // Annuity calculation: P × [r_eff × (1 + r_eff)^n] / [(1 + r_eff)^n – 1]
+        BigDecimal onePlusRate = BigDecimal.ONE.add(monthlyRate);
+        BigDecimal onePlusRatePowerN = onePlusRate.pow(installmentCount);
+
+        // Numerator: r_eff × (1 + r_eff)^n
+        BigDecimal numerator = monthlyRate.multiply(onePlusRatePowerN);
+
+        // Denominator: (1 + r_eff)^n – 1
+        BigDecimal denominator = onePlusRatePowerN.subtract(BigDecimal.ONE);
+
+        // Monthly installment amount
+        BigDecimal monthlyInstallment = totalAmount.multiply(
+                numerator.divide(denominator, SCALE, ROUNDING)
+        );
+
+        // Total amount to be paid
+        return monthlyInstallment.multiply(BigDecimal.valueOf(installmentCount));
     }
 
     private BigDecimal calculateTotalAmount(List<CartItemDto> cartItems) {
