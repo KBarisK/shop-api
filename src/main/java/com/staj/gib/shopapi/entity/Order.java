@@ -31,12 +31,12 @@ public class Order extends BaseEntity{
 
     // remove CashPayment if order gets removed
     @OneToOne(mappedBy = "order",
-            cascade = CascadeType.REMOVE)
+            cascade = CascadeType.ALL)
     private CashPayment cashPayment;
 
     // remove InstallmentPayment if order gets removed.
     @OneToOne(mappedBy = "order",
-            cascade = CascadeType.REMOVE)
+            cascade = CascadeType.ALL)
     private InstallmentPayment installmentPayment;
 
 
