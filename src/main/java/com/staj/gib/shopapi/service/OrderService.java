@@ -1,6 +1,5 @@
 package com.staj.gib.shopapi.service;
 
-import com.staj.gib.shopapi.dto.mapper.InstallmentPaymentMapper;
 import com.staj.gib.shopapi.dto.mapper.OrderMapper;
 import com.staj.gib.shopapi.dto.request.OrderRequest;
 import com.staj.gib.shopapi.dto.response.*;
@@ -32,64 +31,116 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     private final OrderMapper orderMapper;
-    private final InstallmentPaymentMapper  installmentPaymentMapper;
 
     private final CartService cartService;
     private final TaxService taxService;
     private final CategoryService categoryService;
     private final InstallmentPaymentService installmentPaymentService;
-    private final InstallmentService installmentService;
     private final ProductService productService;
 
     public OrderResponse placeOrder(OrderRequest orderRequest) {
-        CartDto cart = this.cartService.getCart(orderRequest.getCartId());
-        List<CartItemDto> cartItems = cart.getCartItems();
-        PaymentMethod paymentMethod = orderRequest.getPaymentMethod();
+        // 1. Validate and retrieve cart
+        CartDto cart = validateAndGetCart(orderRequest.getCartId());
+        
+        // 2. Calculate total amount based on payment method
+        BigDecimal totalAmount = calculateOrderTotal(cart.getCartItems(), orderRequest);
+        
+        // 3. Create and save initial order
+        Order order = createInitialOrder(totalAmount, orderRequest.getPaymentMethod());
+        
+        // 4. Process cart items and update inventory
+        List<OrderItem> orderItems = processCartItems(cart.getCartItems(), order);
+        order.setOrderItems(orderItems);
+        
+        // 5. Handle payment method specific logic
+        handlePaymentMethod(order, orderRequest);
+        
+        // 6. Save final order and clear cart
+        Order savedOrder = orderRepository.save(order);
+        cartService.removeAllItemsFromCart(orderRequest.getCartId());
+        
+        return orderMapper.toOrderResponse(savedOrder);
+    }
 
-        BigDecimal totalAmount = (paymentMethod == PaymentMethod.PAYMENT_INSTALLMENT) ?
-                calculateTotalAmountWithInterest(cartItems,
-                        orderRequest.getInstallmentMonths()) : calculateTotalAmount(cartItems);
+    private CartDto validateAndGetCart(UUID cartId) {
+        CartDto cart = cartService.getCart(cartId);
+        if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
+            throw new IllegalArgumentException("Cart is empty, cannot place order");
+        }
+        return cart;
+    }
 
+    private BigDecimal calculateOrderTotal(List<CartItemDto> cartItems, OrderRequest orderRequest) {
+        if (orderRequest.getPaymentMethod() == PaymentMethod.PAYMENT_INSTALLMENT) {
+            validateInstallmentRequest(orderRequest);
+            return calculateTotalAmountWithInterest(cartItems, orderRequest.getInstallmentCount());
+        }
+        return calculateTotalAmount(cartItems);
+    }
+
+    private void validateInstallmentRequest(OrderRequest orderRequest) {
+        if (orderRequest.getInstallmentCount() <= 0) {
+            throw new IllegalArgumentException("Installment count must be greater than 0");
+        }
+        if (orderRequest.getInterestRate() == null || orderRequest.getInterestRate().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Interest rate must be non-negative");
+        }
+    }
+
+    private Order createInitialOrder(BigDecimal totalAmount, PaymentMethod paymentMethod) {
         Order order = new Order();
-        order.setStatus(OrderStatus.ACTIVE);
+        order.setStatus(determineInitialOrderStatus(paymentMethod));
         order.setTotalAmount(totalAmount);
-        order.setPaymentMethod(orderRequest.getPaymentMethod());
+        order.setPaymentMethod(paymentMethod);
         order.setOrderItems(new ArrayList<>());
-        Order savedOrder = this.orderRepository.save(order);
+        return orderRepository.save(order);
+    }
 
-        List<OrderItem> orderItems = cartItems.stream()
+    private OrderStatus determineInitialOrderStatus(PaymentMethod paymentMethod) {
+        return paymentMethod == PaymentMethod.PAYMENT_CASH ? OrderStatus.FINISHED : OrderStatus.ACTIVE;
+    }
+
+    private List<OrderItem> processCartItems(List<CartItemDto> cartItems, Order order) {
+        return cartItems.stream()
                 .map(cartItem -> {
+                    validateCartItem(cartItem);
                     OrderItem orderItem = createOrderItem(cartItem);
-                    orderItem.setOrder(savedOrder);
-                    this.productService.decrementStock(cartItem.getProduct().getId(), cartItem.getQuantity());
+                    orderItem.setOrder(order);
+                    productService.decrementStock(cartItem.getProduct().getId(), cartItem.getQuantity());
                     return orderItem;
                 })
                 .toList();
+    }
 
-        savedOrder.setOrderItems(orderItems);
-        if (orderRequest.getPaymentMethod().equals(PaymentMethod.PAYMENT_INSTALLMENT)){
-            int installmentMonths = orderRequest.getInstallmentMonths();
-            BigDecimal interestRate = orderRequest.getInterestRate();
-            if (installmentMonths <= 0){
-                throw new IllegalArgumentException("Installment Months has to be greater than 0");
-            }
-
-            InstallmentPaymentDto installmentPaymentDto = installmentPaymentService.saveInstallmentPayment(savedOrder,interestRate);
-            savedOrder.setInstallmentPayment(this.installmentPaymentMapper.toEntity(installmentPaymentDto));
-
-            this.installmentService.generateInstallments(savedOrder, installmentMonths, interestRate);
-
-        }else if(orderRequest.getPaymentMethod().equals(PaymentMethod.PAYMENT_CASH)){
-            CashPayment cashPayment = new CashPayment(savedOrder);
-            savedOrder.setCashPayment(cashPayment);
-            savedOrder.setStatus(OrderStatus.FINISHED);
+    private void validateCartItem(CartItemDto cartItem) {
+        if (cartItem.getQuantity() <= 0) {
+            throw new IllegalArgumentException("Cart item quantity must be greater than 0");
         }
+        if (cartItem.getProduct() == null) {
+            throw new IllegalArgumentException("Cart item must have a valid product");
+        }
+    }
 
-        orderRepository.save(savedOrder);
+    private void handlePaymentMethod(Order order, OrderRequest orderRequest) {
+        switch (orderRequest.getPaymentMethod()) {
+            case PAYMENT_INSTALLMENT -> handleInstallmentPayment(order, orderRequest);
+            case PAYMENT_CASH -> handleCashPayment(order);
+            default -> throw new IllegalArgumentException("Unsupported payment method: " + orderRequest.getPaymentMethod());
+        }
+    }
 
-        this.cartService.removeAllItemsFromCart(orderRequest.getCartId());
+    private void handleInstallmentPayment(Order order, OrderRequest orderRequest) {
+        installmentPaymentService.saveInstallmentPayment(
+                order, 
+                orderRequest.getInterestRate(), 
+                orderRequest.getInstallmentCount()
+        );
+    }
 
-        return this.orderMapper.toOrderResponse(order);
+    private void handleCashPayment(Order order) {
+        CashPayment cashPayment = new CashPayment();
+        cashPayment.setOrder(order);
+        order.setCashPayment(cashPayment);
     }
 
     public OrderResponse getOrder(UUID orderId) {

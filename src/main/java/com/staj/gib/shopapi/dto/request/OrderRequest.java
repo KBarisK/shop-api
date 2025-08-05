@@ -17,7 +17,7 @@ public class OrderRequest implements Serializable {
     @NotBlank
     PaymentMethod paymentMethod;
 
-    int installmentMonths;
+    int installmentCount;
 
     BigDecimal interestRate;
 }
