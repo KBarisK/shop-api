@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Value;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Value
@@ -15,4 +16,8 @@ public class OrderRequest implements Serializable {
 
     @NotBlank
     PaymentMethod paymentMethod;
+
+    int installmentCount;
+
+    BigDecimal interestRate;
 }
