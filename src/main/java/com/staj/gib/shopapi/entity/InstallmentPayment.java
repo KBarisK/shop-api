@@ -21,7 +21,8 @@ public class InstallmentPayment extends BaseEntity {
     // remove installments if parent is gone
     @OneToMany(fetch = FetchType.LAZY,
             mappedBy = "installmentPayment",
-            cascade = CascadeType.REMOVE)
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Installment> installments;
 
     @Column(name = "interest_rate", precision = 6, scale = 3)
