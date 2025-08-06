@@ -23,10 +23,16 @@ public class Product extends BaseEntity
     private BigDecimal price;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="category_id")
+    @JoinColumn(name="category_id", insertable = false, updatable = false)
     private ProductCategory category;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
+    @Column(name="category_id", nullable = false)
+    private UUID categoryId;
+
+    @OneToMany(fetch = FetchType.LAZY,
+            mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<ProductImage> images;
 
     @Lob
