@@ -1,7 +1,7 @@
 package com.staj.gib.shopapi.dto.request;
 
 import com.staj.gib.shopapi.enums.PaymentMethod;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 
 import java.io.Serializable;
@@ -11,13 +11,14 @@ import java.util.UUID;
 @Value
 public class OrderRequest implements Serializable {
 
-    @NotBlank
+    @NotNull
     UUID cartId;
 
-    @NotBlank
+    @NotNull
     PaymentMethod paymentMethod;
 
-    int installmentCount;
+    @NotNull
+    Integer installmentCount;
 
     BigDecimal interestRate;
 }
