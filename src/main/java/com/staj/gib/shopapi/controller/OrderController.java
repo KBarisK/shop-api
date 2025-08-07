@@ -20,7 +20,7 @@ public class OrderController {
         return orderService.placeOrder(orderRequest);
     }
 
-    @GetMapping("{/orderId}")
+    @GetMapping("/{orderId}")
     public OrderResponse processOrder(@PathVariable UUID orderId) {
         return orderService.getOrder(orderId);
     }
