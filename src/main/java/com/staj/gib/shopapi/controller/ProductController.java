@@ -23,6 +23,7 @@ public class ProductController {
         return service.getAllProducts();
     }
 
+    // todo when we have image hosting, do not accept URL, instead get the image and upload
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProductResponse newProduct(@Valid @RequestBody CreateProductRequest newProduct) {
