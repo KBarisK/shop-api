@@ -47,6 +47,12 @@ public class TaxService {
 
     }
 
+    @Transactional(readOnly = true)
+    public TaxResponse getTaxByName(String name) {
+        return repository.findByTaxName(name).map(mapper::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Tax", name));
+    }
+
     public void deleteTaxById(UUID id){
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("Tax", id);

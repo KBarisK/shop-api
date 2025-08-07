@@ -42,4 +42,7 @@ public class GlobalExceptionHandler {
     }
 
 
+    /// validasyon mesajlarınaformat verilip buraya entegrasyonu yazılacak @Valid ile tetiklenenler için
+
+
 }

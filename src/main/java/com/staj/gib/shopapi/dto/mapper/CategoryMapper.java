@@ -1,4 +1,6 @@
 package com.staj.gib.shopapi.dto.mapper;
+import com.staj.gib.shopapi.dto.request.CategoryTaxRequest;
+import com.staj.gib.shopapi.dto.request.CreateCategoryRequest;
 import com.staj.gib.shopapi.dto.response.CategoryResponse;
 import com.staj.gib.shopapi.dto.response.CategoryTaxResponse;
 import com.staj.gib.shopapi.entity.ProductCategory;
@@ -14,5 +16,7 @@ public interface CategoryMapper {
     @Mapping(target = "taxName", source = "tax.taxName")
     CategoryTaxResponse mapCategoryTax(ProductCategoryTax categoryTax);
 
+    ProductCategory requestToCategory(CreateCategoryRequest request);
 
+    ProductCategoryTax requestToCategoryTax(CategoryTaxRequest request);
 }

@@ -1,8 +1,13 @@
 package com.staj.gib.shopapi.service;
 
 import com.staj.gib.shopapi.dto.mapper.ProductMapper;
+import com.staj.gib.shopapi.dto.request.CreateProductRequest;
+import com.staj.gib.shopapi.dto.request.TaxRequest;
+import com.staj.gib.shopapi.dto.request.UpdateProductRequest;
 import com.staj.gib.shopapi.dto.response.ProductResponse;
+import com.staj.gib.shopapi.dto.response.TaxResponse;
 import com.staj.gib.shopapi.entity.Product;
+import com.staj.gib.shopapi.entity.Tax;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.ProductRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +29,32 @@ public class ProductService {
                 -> new ResourceNotFoundException("Product",productid));
 
         return mapper.toResponse(product);
+    }
+
+    public ProductResponse createProduct(CreateProductRequest request) {
+        Product product = mapper.toEntity(request);
+
+        product.getImages().forEach(img -> img.setProduct(product));
+
+        return mapper.toResponse(this.repository.save(product));
+    }
+
+    public ProductResponse updateProduct(UpdateProductRequest request){
+        Product existingProduct = repository.findById(request.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product", request.getId()));
+
+        // update only non-null fields
+        mapper.updateEntity(existingProduct, request);
+        existingProduct.getImages().forEach(img -> img.setProduct(existingProduct));
+
+        return mapper.toResponse(repository.save(existingProduct));
+    }
+
+    public void deleteProductById(UUID id){
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Product", id);
+        }
+        repository.deleteById(id);
     }
 
     @Transactional(readOnly = true)

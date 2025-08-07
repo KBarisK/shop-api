@@ -1,8 +1,9 @@
 package com.staj.gib.shopapi.controller;
 
-import com.staj.gib.shopapi.dto.request.CartRepuest;
+import com.staj.gib.shopapi.dto.request.CartRequest;
 import com.staj.gib.shopapi.dto.response.CartDto;
 import com.staj.gib.shopapi.service.CartService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +22,13 @@ public class CartController {
     }
 
     @DeleteMapping("/remove-item")
-    CartDto removeItemFromCart(CartRepuest cartRepuest) {
-        return this.cartService.removeItemFromCart(cartRepuest);
+    CartDto removeItemFromCart(@Valid @RequestBody CartRequest cartRequest) {
+        return this.cartService.removeItemFromCart(cartRequest);
     }
 
     @PostMapping("/add-item")
-    CartDto addItemToCart(CartRepuest cartRepuest) {
-        return this.cartService.addItemToCart(cartRepuest);
+    CartDto addItemToCart(@Valid @RequestBody CartRequest cartRequest) {
+        return this.cartService.addItemToCart(cartRequest);
     }
 
     @DeleteMapping("/remove-all/{cartId}")

@@ -6,8 +6,8 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Value
-public class CartRepuest implements Serializable {
-    UUID cartId;
+public class CartRequest implements Serializable {
+    UUID userId;
     UUID productId;
     short quantity;
 }

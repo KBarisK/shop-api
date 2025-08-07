@@ -3,6 +3,7 @@ package com.staj.gib.shopapi.controller;
 import com.staj.gib.shopapi.dto.request.OrderRequest;
 import com.staj.gib.shopapi.dto.response.OrderResponse;
 import com.staj.gib.shopapi.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/place")
-    public OrderResponse placeOrder(OrderRequest orderRequest) {
+    public OrderResponse placeOrder(@Valid @RequestBody OrderRequest orderRequest) {
         return orderService.placeOrder(orderRequest);
     }
 

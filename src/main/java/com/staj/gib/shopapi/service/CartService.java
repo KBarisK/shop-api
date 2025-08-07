@@ -1,7 +1,7 @@
 package com.staj.gib.shopapi.service;
 
 import com.staj.gib.shopapi.dto.mapper.ProductMapper;
-import com.staj.gib.shopapi.dto.request.CartRepuest;
+import com.staj.gib.shopapi.dto.request.CartRequest;
 import com.staj.gib.shopapi.dto.response.CartDto;
 import com.staj.gib.shopapi.entity.Cart;
 import com.staj.gib.shopapi.entity.CartItem;
@@ -34,35 +34,41 @@ public class CartService {
         return this.cartMapper.cartToCartDto(cart);
     }
 
-    public CartDto addItemToCart(CartRepuest cartRepuest) {
-        Cart cart = cartRepository.findById(cartRepuest.getCartId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cart",cartRepuest.getCartId()));
+    public CartDto addItemToCart(CartRequest cartRequest) {
+        Cart cart = cartRepository.findByUser_Id(cartRequest.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("UserCart", cartRequest.getUserId()));
 
-        Optional<CartItem> existingItem = cart.getCartItems().stream().filter(cartItem -> cartItem.getProduct().getId().equals(cartRepuest.getProductId())).findFirst();
+        Optional<CartItem> existingItem = cart.getCartItems().stream()
+                .filter(cartItem -> cartItem.getProduct().getId()
+                        .equals(cartRequest.getProductId()))
+                .findFirst();
 
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
-            short newQuantity = (short) (item.getQuantity() + cartRepuest.getQuantity());
+            short newQuantity = (short) (item.getQuantity() + cartRequest.getQuantity());
             item.setQuantity(newQuantity);
         } else {
-            Product product = this.productMapper.productFromId(cartRepuest.getProductId());
-            CartItem newItem = new CartItem(cart, product, cartRepuest.getQuantity());
+            CartItem newItem = new CartItem();
+            newItem.setProductId(cartRequest.getProductId());
+            newItem.setCart(cart);
+            newItem.setQuantity(cartRequest.getQuantity());
+
             cart.getCartItems().add(newItem);
         }
         Cart savedCart = cartRepository.save(cart);
         return this.cartMapper.cartToCartDto(savedCart);
     }
 
-    public CartDto removeItemFromCart(CartRepuest cartRepuest) {
-        Cart cart = this.cartRepository.findById(cartRepuest.getCartId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cart",cartRepuest.getCartId()));
+    public CartDto removeItemFromCart(CartRequest cartRequest) {
+        Cart cart = cartRepository.findByUser_Id(cartRequest.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("UserCart", cartRequest.getUserId()));
         cart.getCartItems().removeIf(item -> { //true means delete false means keep the item.
-            if (item.getProduct().getId().equals(cartRepuest.getProductId())) {
+            if (item.getProduct().getId().equals(cartRequest.getProductId())) {
                 short currentQuantity = item.getQuantity();
-                if (cartRepuest.getQuantity() >= currentQuantity) {
+                if (cartRequest.getQuantity() >= currentQuantity) {
                     return true;
                 } else {
-                    item.setQuantity((short) (currentQuantity - cartRepuest.getQuantity()));
+                    item.setQuantity((short) (currentQuantity - cartRequest.getQuantity()));
                     return false;
                 }
             }
@@ -74,7 +80,7 @@ public class CartService {
 
     public void removeAllItemsFromCart(UUID cartId) {
         Cart cart  = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart",cartId));
-        cart.setCartItems(new ArrayList<>());
+        cart.getCartItems().clear();
         cartRepository.save(cart);
     }
 

@@ -1,9 +1,10 @@
 package com.staj.gib.shopapi.dto.mapper;
 
+import com.staj.gib.shopapi.dto.request.CreateProductRequest;
+import com.staj.gib.shopapi.dto.request.UpdateProductRequest;
 import com.staj.gib.shopapi.dto.response.ProductResponse;
 import com.staj.gib.shopapi.entity.Product;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 import java.util.UUID;
 
@@ -15,5 +16,18 @@ public interface ProductMapper {
 
     @Mapping(target = "id", source = "productId")
     Product productFromId(UUID productId);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "images", source = "imageUrls")
+    Product toEntity(CreateProductRequest request);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "images", source = "imageUrls")
+    void updateEntity(@MappingTarget Product existingProduct, UpdateProductRequest request);
 
 }
