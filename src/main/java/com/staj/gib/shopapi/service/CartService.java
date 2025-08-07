@@ -80,7 +80,7 @@ public class CartService {
 
     public void removeAllItemsFromCart(UUID cartId) {
         Cart cart  = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart",cartId));
-        cart.setCartItems(new ArrayList<>());
+        cart.getCartItems().clear();
         cartRepository.save(cart);
     }
 
