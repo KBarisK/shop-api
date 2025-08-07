@@ -95,7 +95,7 @@ public class OrderService {
         order.setPaymentMethod(paymentMethod);
         order.setOrderItems(new ArrayList<>());
         order.setUserId(userId);
-        return orderRepository.save(order);
+        return order;
     }
 
     private OrderStatus determineInitialOrderStatus(PaymentMethod paymentMethod) {
