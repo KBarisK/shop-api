@@ -3,9 +3,9 @@ package com.staj.gib.shopapi.service;
 import com.staj.gib.shopapi.dto.mapper.ProductMapper;
 import com.staj.gib.shopapi.dto.request.CartRequest;
 import com.staj.gib.shopapi.dto.response.CartDto;
+import com.staj.gib.shopapi.dto.response.CartOrderDto;
 import com.staj.gib.shopapi.entity.Cart;
 import com.staj.gib.shopapi.entity.CartItem;
-import com.staj.gib.shopapi.entity.Product;
 import com.staj.gib.shopapi.entity.dto.mapper.CartMapper;
 import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.CartRepository;
@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -84,10 +83,10 @@ public class CartService {
         cartRepository.save(cart);
     }
 
-    public CartDto getCart(UUID cartId) {
+    public CartOrderDto getCart(UUID cartId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart",cartId));
-        return this.cartMapper.cartToCartDto(cart);
+        return this.cartMapper.cartToCartOrderDto(cart);
     }
 
     public void createCart(UUID userId) {
