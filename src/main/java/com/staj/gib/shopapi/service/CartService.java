@@ -35,18 +35,24 @@ public class CartService {
     }
 
     public CartDto addItemToCart(CartRequest cartRequest) {
-        Cart cart = cartRepository.findById(cartRequest.getCartId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", cartRequest.getCartId()));
+        Cart cart = cartRepository.findByUser_Id(cartRequest.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("UserCart", cartRequest.getUserId()));
 
-        Optional<CartItem> existingItem = cart.getCartItems().stream().filter(cartItem -> cartItem.getProduct().getId().equals(cartRequest.getProductId())).findFirst();
+        Optional<CartItem> existingItem = cart.getCartItems().stream()
+                .filter(cartItem -> cartItem.getProduct().getId()
+                        .equals(cartRequest.getProductId()))
+                .findFirst();
 
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
             short newQuantity = (short) (item.getQuantity() + cartRequest.getQuantity());
             item.setQuantity(newQuantity);
         } else {
-            Product product = this.productMapper.productFromId(cartRequest.getProductId());
-            CartItem newItem = new CartItem(cart, product, cartRequest.getQuantity());
+            CartItem newItem = new CartItem();
+            newItem.setProductId(cartRequest.getProductId());
+            newItem.setCart(cart);
+            newItem.setQuantity(cartRequest.getQuantity());
+
             cart.getCartItems().add(newItem);
         }
         Cart savedCart = cartRepository.save(cart);
@@ -54,8 +60,8 @@ public class CartService {
     }
 
     public CartDto removeItemFromCart(CartRequest cartRequest) {
-        Cart cart = this.cartRepository.findById(cartRequest.getCartId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", cartRequest.getCartId()));
+        Cart cart = cartRepository.findByUser_Id(cartRequest.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("UserCart", cartRequest.getUserId()));
         cart.getCartItems().removeIf(item -> { //true means delete false means keep the item.
             if (item.getProduct().getId().equals(cartRequest.getProductId())) {
                 short currentQuantity = item.getQuantity();

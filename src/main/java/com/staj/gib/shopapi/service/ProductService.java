@@ -34,6 +34,8 @@ public class ProductService {
     public ProductResponse createProduct(CreateProductRequest request) {
         Product product = mapper.toEntity(request);
 
+        product.getImages().forEach(img -> img.setProduct(product));
+
         return mapper.toResponse(this.repository.save(product));
     }
 

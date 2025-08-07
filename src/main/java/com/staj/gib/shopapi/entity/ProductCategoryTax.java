@@ -19,9 +19,12 @@ public class ProductCategoryTax extends BaseEntity{
     private ProductCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="tax_id")
+    @JoinColumn(name="tax_id", insertable = false, updatable = false)
     private Tax tax;
 
-    @Column(name = "tax_percent", precision = 3, scale = 3)
+    @Column(name="tax_id", nullable = false)
+    private UUID taxId;
+
+    @Column(name = "tax_percent", precision = 6, scale = 3)
     private BigDecimal taxPercent;
 }

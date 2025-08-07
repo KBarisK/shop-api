@@ -43,11 +43,9 @@ public class CategoryService {
     }
 
     public CategoryResponse createCategory(CreateCategoryRequest request) {
-        ProductCategory category = new ProductCategory(request.getCategoryName(), new ArrayList<>());
-        for(CategoryTaxRequest c : request.getTaxes()){
-            Tax taxReference = this.taxMapper.getFromId(c.getTaxId());
-            category.getTaxes().add(new ProductCategoryTax(category, taxReference, c.getTaxPercent()));
-        }
+        ProductCategory category = mapper.requestToCategory(request);
+
+        category.getTaxes().forEach(tax -> tax.setCategory(category));
 
         ProductCategory saved = repository.save(category);
         return mapper.mapCategory(saved);
@@ -64,8 +62,8 @@ public class CategoryService {
             category.getTaxes().clear();
 
             for(CategoryTaxRequest taxRequest : request.getTaxes()) {
-                Tax taxReference = this.taxMapper.getFromId(taxRequest.getTaxId());
-                ProductCategoryTax categoryTax = new ProductCategoryTax(category, taxReference, taxRequest.getTaxPercent());
+                ProductCategoryTax categoryTax = mapper.requestToCategoryTax(taxRequest);
+                categoryTax.setCategory(category);
                 category.getTaxes().add(categoryTax);
             }
         }

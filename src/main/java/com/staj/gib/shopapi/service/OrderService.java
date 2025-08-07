@@ -44,8 +44,9 @@ public class OrderService {
         
         // 2. Calculate total amount based on payment method
         BigDecimal totalAmount = calculateOrderTotal(cart.getCartItems(), orderRequest);
-        
+
         // 3. Create and save initial order
+        // TODO user needs to be set
         Order order = createInitialOrder(totalAmount, orderRequest.getPaymentMethod());
         
         // 4. Process cart items and update inventory
