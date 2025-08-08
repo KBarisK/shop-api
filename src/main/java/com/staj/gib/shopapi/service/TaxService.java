@@ -21,13 +21,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @AllArgsConstructor
 public class TaxService {
     private final TaxRepository repository;
     private final TaxMapper mapper;
 
-    @Transactional(readOnly = true)
     public List<TaxResponse> getAllTaxes() {
         return repository.findAll()
                 .stream()
@@ -35,25 +34,25 @@ public class TaxService {
                 .toList();
     }
 
+    @Transactional
     public TaxResponse createTax(TaxRequest request) {
         Tax tax = mapper.toEntity(request);
         tax = repository.save(tax);
         return mapper.toResponse(tax);
     }
 
-    @Transactional(readOnly = true)
     public TaxResponse getTaxById(UUID id) {
         return repository.findById(id).map(mapper::toResponse)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TAX_NOT_FOUND, id));
 
     }
 
-    @Transactional(readOnly = true)
     public TaxResponse getTaxByName(String name) {
         return repository.findByTaxName(name).map(mapper::toResponse)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TAX_NOT_FOUND, name));
     }
 
+    @Transactional
     public void deleteTaxById(UUID id){
         if (!repository.existsById(id)) {
             throw new BusinessException(ErrorCode.TAX_NOT_FOUND, id);
@@ -61,6 +60,7 @@ public class TaxService {
         repository.deleteById(id);
     }
 
+    @Transactional
     public TaxResponse replaceTax(UpdateTaxRequest request) {
         Tax tax = repository.findById(request.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.TAX_NOT_FOUND, request.getId()));

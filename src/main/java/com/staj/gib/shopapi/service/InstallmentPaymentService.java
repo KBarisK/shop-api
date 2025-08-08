@@ -5,9 +5,9 @@ import com.staj.gib.shopapi.entity.InstallmentPayment;
 import com.staj.gib.shopapi.entity.Order;
 import com.staj.gib.shopapi.enums.InstallmentStatus;
 import com.staj.gib.shopapi.repository.InstallmentPaymentRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class InstallmentPaymentService {
 
@@ -25,6 +25,7 @@ public class InstallmentPaymentService {
 
     private final InstallmentPaymentRepository installmentPaymentRepository;
 
+    @Transactional
     public void saveInstallmentPayment(Order order, BigDecimal interestRate,int installmentCount) {
         InstallmentPayment installmentPayment = new InstallmentPayment(order,new ArrayList<>(),interestRate);
         InstallmentPayment savedInstallmentPayment =installmentPaymentRepository.save(installmentPayment);
