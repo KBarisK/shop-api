@@ -7,6 +7,8 @@ import com.staj.gib.shopapi.entity.OrderItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
 
@@ -18,4 +20,6 @@ public interface OrderMapper {
     @Mapping(target = "product", ignore = true)
     @Mapping(source = "product.id", target = "productId")
     OrderItem cartItemDtoToOrderItem(CartItemDto cartItemDto);
+
+    List<OrderResponse> toOrderResponseList(List<Order> orders);
 }

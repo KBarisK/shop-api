@@ -4,9 +4,11 @@ import com.staj.gib.shopapi.dto.request.OrderRequest;
 import com.staj.gib.shopapi.dto.response.OrderResponse;
 import com.staj.gib.shopapi.service.OrderService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,7 +24,12 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public OrderResponse processOrder(@PathVariable UUID orderId) {
+    public OrderResponse processOrder(@PathVariable @NotNull UUID orderId) {
         return orderService.getOrder(orderId);
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<OrderResponse> getOrdersOfUser(@PathVariable @NotNull UUID userId) {
+        return orderService.getOrdersOfUser(userId);
     }
 }

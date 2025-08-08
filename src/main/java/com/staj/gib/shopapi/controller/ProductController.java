@@ -5,6 +5,7 @@ import com.staj.gib.shopapi.dto.request.UpdateProductRequest;
 import com.staj.gib.shopapi.dto.response.ProductResponse;
 import com.staj.gib.shopapi.service.ProductService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ProductResponse one(@PathVariable UUID id) {
+    public ProductResponse one(@PathVariable @NotNull UUID id) {
         return service.getProduct(id);
     }
 
@@ -42,7 +43,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteProduct(@PathVariable UUID id) {
+    public void deleteProduct(@PathVariable @NotNull UUID id) {
         service.deleteProductById(id);
     }
 }

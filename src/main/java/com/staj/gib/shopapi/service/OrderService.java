@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -64,9 +65,14 @@ public class OrderService {
         return orderMapper.toOrderResponse(savedOrder);
     }
 
+    public List<OrderResponse> getOrdersOfUser(UUID userId) {
+        return orderMapper.toOrderResponseList(this.orderRepository.findAllByUserId(userId));
+
+    }
+
     private CartOrderDto validateAndGetCart(UUID cartId) {
         CartOrderDto cart = cartService.getCart(cartId);
-        if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
+        if (Objects.isNull(cart.getCartItems())|| cart.getCartItems().isEmpty()) {
             throw new IllegalArgumentException("Cart is empty, cannot place order");
         }
         return cart;

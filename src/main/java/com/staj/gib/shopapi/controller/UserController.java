@@ -5,6 +5,7 @@ import com.staj.gib.shopapi.dto.response.ResponseUserDto;
 import com.staj.gib.shopapi.dto.request.UpdateUserDto;
 import com.staj.gib.shopapi.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping(value = "/{userId}")
-    public ResponseUserDto getUser(@PathVariable UUID userId)
+    public ResponseUserDto getUser(@PathVariable @NotNull UUID userId)
     {
         return this.userService.getUser(userId);
     }
