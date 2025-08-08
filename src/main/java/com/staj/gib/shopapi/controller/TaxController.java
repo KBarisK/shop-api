@@ -5,6 +5,7 @@ import com.staj.gib.shopapi.dto.response.TaxResponse;
 import com.staj.gib.shopapi.dto.request.UpdateTaxRequest;
 import com.staj.gib.shopapi.service.TaxService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class TaxController {
     }
 
     @GetMapping("/{id}")
-    public TaxResponse one(@PathVariable UUID id) {
+    public TaxResponse one(@PathVariable @NotNull UUID id) {
         return service.getTaxById(id);
     }
 
@@ -44,7 +45,7 @@ public class TaxController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTax(@PathVariable UUID id) {
+    public void deleteTax(@PathVariable @NotNull UUID id) {
         service.deleteTaxById(id);
     }
 }
