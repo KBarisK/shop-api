@@ -2,7 +2,6 @@ package com.staj.gib.shopapi;
 
 import com.staj.gib.shopapi.dto.response.ErrorResponse;
 import com.staj.gib.shopapi.exception.BusinessException;
-import com.staj.gib.shopapi.exception.InvalidPasswordException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -52,13 +51,6 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
-
-    @ExceptionHandler(InvalidPasswordException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleInvalidPassword(InvalidPasswordException ex) {
-        return ex.getMessage();
-    }
-
 
     /// validasyon mesajlarınaformat verilip buraya entegrasyonu yazılacak @Valid ile tetiklenenler için
 

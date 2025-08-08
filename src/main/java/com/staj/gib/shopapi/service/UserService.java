@@ -7,7 +7,6 @@ import com.staj.gib.shopapi.dto.request.UpdateUserDto;
 import com.staj.gib.shopapi.dto.mapper.UserMapper;
 import com.staj.gib.shopapi.enums.ErrorCode;
 import com.staj.gib.shopapi.exception.BusinessException;
-import com.staj.gib.shopapi.exception.InvalidPasswordException;
 import com.staj.gib.shopapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,7 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseUserDto saveUser(CreateUserDto createUserDto) throws InvalidPasswordException {
+    public ResponseUserDto saveUser(CreateUserDto createUserDto) {
         User user = userMapper.createUserDtoToUser(createUserDto);
         user.setUserType(UserType.CUSTOMER);
         User savedUser = userRepository.save(user);
