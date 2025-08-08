@@ -1,5 +1,6 @@
 package com.staj.gib.shopapi.service;
 
+import com.staj.gib.shopapi.constant.RoundingConstants;
 import com.staj.gib.shopapi.dto.mapper.OrderMapper;
 import com.staj.gib.shopapi.dto.request.OrderRequest;
 import com.staj.gib.shopapi.dto.response.*;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,9 +26,6 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OrderService {
-
-    private static final int SCALE = 2;
-    private static final RoundingMode ROUNDING = RoundingMode.HALF_UP;
 
     private final OrderRepository orderRepository;
 
@@ -163,7 +160,7 @@ public class OrderService {
         BigDecimal totalAmount = calculateTotalAmount(cartItems);
 
         // Add interest
-        BigDecimal monthlyRate = BigDecimal.valueOf(0.0425);
+        BigDecimal monthlyRate = RoundingConstants.DEFAULT_MONTHLY_INTEREST_RATE;
 
         // Annuity calculation: P × [r_eff × (1 + r_eff)^n] / [(1 + r_eff)^n – 1]
         BigDecimal onePlusRate = BigDecimal.ONE.add(monthlyRate);
@@ -177,7 +174,7 @@ public class OrderService {
 
         // Monthly installment amount
         BigDecimal monthlyInstallment = totalAmount.multiply(
-                numerator.divide(denominator, SCALE, ROUNDING)
+                numerator.divide(denominator, RoundingConstants.SCALE, RoundingConstants.ROUNDING)
         );
 
         // Total amount to be paid
@@ -192,11 +189,11 @@ public class OrderService {
 
             BigDecimal itemTotalWithQuantity = totalItemPrice
                     .multiply(BigDecimal.valueOf(cartItem.getQuantity()))
-                    .setScale(SCALE, ROUNDING);
+                    .setScale(RoundingConstants.SCALE, RoundingConstants.ROUNDING);
 
             totalPrice = totalPrice.add(itemTotalWithQuantity);
         }
-        return totalPrice.setScale(SCALE, ROUNDING);
+        return totalPrice.setScale(RoundingConstants.SCALE, RoundingConstants.ROUNDING);
     }
 
 
@@ -211,7 +208,7 @@ public class OrderService {
 
     private BigDecimal getProductTotalPrice(CartItemDto cartItem) {
         ProductResponse product = cartItem.getProduct();
-        BigDecimal productPrice = product.getPrice().setScale(SCALE, ROUNDING);
+        BigDecimal productPrice = product.getPrice().setScale(RoundingConstants.SCALE, RoundingConstants.ROUNDING);
         BigDecimal totalItemPrice = productPrice;
 
         CategoryResponse category = categoryService.getCategory(product.getCategoryId());
@@ -223,7 +220,7 @@ public class OrderService {
                     taxDetail.getAmount()
             );
         }
-        return totalItemPrice.setScale(SCALE, ROUNDING);
+        return totalItemPrice.setScale(RoundingConstants.SCALE, RoundingConstants.ROUNDING);
     }
 
 }

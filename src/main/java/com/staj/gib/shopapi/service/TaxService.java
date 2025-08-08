@@ -1,5 +1,14 @@
 package com.staj.gib.shopapi.service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.staj.gib.shopapi.constant.RoundingConstants;
 import com.staj.gib.shopapi.dto.mapper.TaxMapper;
 import com.staj.gib.shopapi.dto.request.TaxRequest;
 import com.staj.gib.shopapi.dto.request.UpdateTaxRequest;
@@ -10,15 +19,8 @@ import com.staj.gib.shopapi.entity.Tax;
 import com.staj.gib.shopapi.enums.ErrorCode;
 import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.TaxRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import lombok.AllArgsConstructor;
 
 @Service
 @Transactional(readOnly = true)
@@ -71,7 +73,7 @@ public class TaxService {
 
     public TaxDetailDto calculateTax(BigDecimal amount, CategoryTaxResponse categoryTaxResponse) {
         BigDecimal taxPercent = categoryTaxResponse.getTaxPercent();
-        BigDecimal taxAmount = amount.multiply(taxPercent).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP);
+        BigDecimal taxAmount = amount.multiply(taxPercent).divide(BigDecimal.valueOf(100), RoundingConstants.SCALE, RoundingConstants.ROUNDING);
         return new TaxDetailDto(categoryTaxResponse.getTaxName(), taxAmount);
     }
 

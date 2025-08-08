@@ -1,27 +1,26 @@
 package com.staj.gib.shopapi.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.staj.gib.shopapi.constant.RoundingConstants;
 import com.staj.gib.shopapi.entity.Installment;
 import com.staj.gib.shopapi.entity.InstallmentPayment;
 import com.staj.gib.shopapi.entity.Order;
 import com.staj.gib.shopapi.enums.InstallmentStatus;
 import com.staj.gib.shopapi.repository.InstallmentPaymentRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class InstallmentPaymentService {
-
-    private static final int SCALE = 2;
-    private static final RoundingMode ROUNDING = RoundingMode.HALF_UP;
 
     private final InstallmentPaymentRepository installmentPaymentRepository;
 
@@ -34,7 +33,7 @@ public class InstallmentPaymentService {
 
     private void generateInstallments(InstallmentPayment installmentPayment, BigDecimal totalAmount, int installmentCount) {
 
-        BigDecimal installmentAmount = totalAmount.divide(java.math.BigDecimal.valueOf(installmentCount), SCALE, ROUNDING);
+        BigDecimal installmentAmount = totalAmount.divide(java.math.BigDecimal.valueOf(installmentCount), RoundingConstants.SCALE, RoundingConstants.ROUNDING);
         
         // Handle rounding remainder for the last installment
         BigDecimal remainingAmount = totalAmount;
