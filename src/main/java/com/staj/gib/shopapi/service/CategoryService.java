@@ -8,14 +8,13 @@ import com.staj.gib.shopapi.dto.request.UpdateCategoryRequest;
 import com.staj.gib.shopapi.dto.response.CategoryResponse;
 import com.staj.gib.shopapi.entity.ProductCategory;
 import com.staj.gib.shopapi.entity.ProductCategoryTax;
-import com.staj.gib.shopapi.entity.Tax;
-import com.staj.gib.shopapi.exception.ResourceNotFoundException;
+import com.staj.gib.shopapi.enums.ErrorCode;
+import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.ProductCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +28,7 @@ public class CategoryService {
 
     public CategoryResponse getCategory(UUID categoryId) {
         ProductCategory category = repository.findById(categoryId).orElseThrow(()
-                -> new ResourceNotFoundException("ProductCategory",categoryId));
+                -> new BusinessException(ErrorCode.PRODUCT_CATEGORY_NOT_FOUND, categoryId));
 
         return mapper.mapCategory(category);
     }
@@ -53,7 +52,7 @@ public class CategoryService {
 
     public CategoryResponse updateCategory(UpdateCategoryRequest request) {
         ProductCategory category = repository.findById(request.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("ProductCategory", request.getId()));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_CATEGORY_NOT_FOUND, request.getId()));
 
         category.setCategoryName(request.getCategoryName());
 
@@ -74,7 +73,7 @@ public class CategoryService {
 
     public void deleteCategory(UUID categoryId) {
         if (!repository.existsById(categoryId)) {
-            throw new ResourceNotFoundException("ProductCategory", categoryId);
+            throw new BusinessException(ErrorCode.PRODUCT_CATEGORY_NOT_FOUND, categoryId);
         }
 
         repository.deleteById(categoryId);

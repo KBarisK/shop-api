@@ -7,7 +7,8 @@ import com.staj.gib.shopapi.dto.response.CategoryTaxResponse;
 import com.staj.gib.shopapi.dto.response.TaxDetailDto;
 import com.staj.gib.shopapi.dto.response.TaxResponse;
 import com.staj.gib.shopapi.entity.Tax;
-import com.staj.gib.shopapi.exception.ResourceNotFoundException;
+import com.staj.gib.shopapi.enums.ErrorCode;
+import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.TaxRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,26 +44,26 @@ public class TaxService {
     @Transactional(readOnly = true)
     public TaxResponse getTaxById(UUID id) {
         return repository.findById(id).map(mapper::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Tax", id));
+                .orElseThrow(() -> new BusinessException(ErrorCode.TAX_NOT_FOUND, id));
 
     }
 
     @Transactional(readOnly = true)
     public TaxResponse getTaxByName(String name) {
         return repository.findByTaxName(name).map(mapper::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Tax", name));
+                .orElseThrow(() -> new BusinessException(ErrorCode.TAX_NOT_FOUND, name));
     }
 
     public void deleteTaxById(UUID id){
         if (!repository.existsById(id)) {
-            throw new ResourceNotFoundException("Tax", id);
+            throw new BusinessException(ErrorCode.TAX_NOT_FOUND, id);
         }
         repository.deleteById(id);
     }
 
     public TaxResponse replaceTax(UpdateTaxRequest request) {
         Tax tax = repository.findById(request.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Tax", request.getId()));
+                .orElseThrow(() -> new BusinessException(ErrorCode.TAX_NOT_FOUND, request.getId()));
         mapper.updateFromDto(request, tax);
         tax = repository.save(tax);
         return mapper.toResponse(tax);

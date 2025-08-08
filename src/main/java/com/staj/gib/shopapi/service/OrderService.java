@@ -6,9 +6,10 @@ import com.staj.gib.shopapi.dto.response.*;
 import com.staj.gib.shopapi.entity.CashPayment;
 import com.staj.gib.shopapi.entity.Order;
 import com.staj.gib.shopapi.entity.OrderItem;
+import com.staj.gib.shopapi.enums.ErrorCode;
 import com.staj.gib.shopapi.enums.OrderStatus;
 import com.staj.gib.shopapi.enums.PaymentMethod;
-import com.staj.gib.shopapi.exception.ResourceNotFoundException;
+import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -147,7 +148,7 @@ public class OrderService {
 
     public OrderResponse getOrder(UUID orderId) {
         Order order = this.orderRepository.findById(orderId)
-                .orElseThrow(()-> new ResourceNotFoundException("Order", orderId));
+                .orElseThrow(()-> new BusinessException(ErrorCode.ORDER_NOT_FOUND, orderId));
         return this.orderMapper.toOrderResponse(order);
     }
 
