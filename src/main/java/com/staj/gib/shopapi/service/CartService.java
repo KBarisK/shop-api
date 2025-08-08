@@ -3,17 +3,17 @@ package com.staj.gib.shopapi.service;
 import com.staj.gib.shopapi.dto.mapper.ProductMapper;
 import com.staj.gib.shopapi.dto.request.CartRequest;
 import com.staj.gib.shopapi.dto.response.CartDto;
+import com.staj.gib.shopapi.dto.response.CartOrderDto;
 import com.staj.gib.shopapi.entity.Cart;
 import com.staj.gib.shopapi.entity.CartItem;
-import com.staj.gib.shopapi.entity.Product;
 import com.staj.gib.shopapi.entity.dto.mapper.CartMapper;
-import com.staj.gib.shopapi.exception.ResourceNotFoundException;
+import com.staj.gib.shopapi.enums.ErrorCode;
+import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.CartRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,13 +30,14 @@ public class CartService {
 
     public CartDto getActiveCart(UUID userId) {
         Cart cart = this.cartRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart for User",userId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CART_FOR_USER_NOT_FOUND, userId));
+
         return this.cartMapper.cartToCartDto(cart);
     }
 
     public CartDto addItemToCart(CartRequest cartRequest) {
         Cart cart = cartRepository.findByUser_Id(cartRequest.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("UserCart", cartRequest.getUserId()));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CART_FOR_USER_NOT_FOUND, cartRequest.getUserId()));
 
         Optional<CartItem> existingItem = cart.getCartItems().stream()
                 .filter(cartItem -> cartItem.getProduct().getId()
@@ -61,7 +62,7 @@ public class CartService {
 
     public CartDto removeItemFromCart(CartRequest cartRequest) {
         Cart cart = cartRepository.findByUser_Id(cartRequest.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("UserCart", cartRequest.getUserId()));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CART_FOR_USER_NOT_FOUND, cartRequest.getUserId()));
         cart.getCartItems().removeIf(item -> { //true means delete false means keep the item.
             if (item.getProduct().getId().equals(cartRequest.getProductId())) {
                 short currentQuantity = item.getQuantity();
@@ -79,15 +80,15 @@ public class CartService {
     }
 
     public void removeAllItemsFromCart(UUID cartId) {
-        Cart cart  = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart",cartId));
+        Cart cart  = cartRepository.findById(cartId).orElseThrow(() ->new BusinessException(ErrorCode.CART_NOT_FOUND,cartId));
         cart.getCartItems().clear();
         cartRepository.save(cart);
     }
 
-    public CartDto getCart(UUID cartId) {
+    public CartOrderDto getCart(UUID cartId) {
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart",cartId));
-        return this.cartMapper.cartToCartDto(cart);
+                .orElseThrow(() -> new BusinessException(ErrorCode.CART_NOT_FOUND,cartId));
+        return this.cartMapper.cartToCartOrderDto(cart);
     }
 
     public void createCart(UUID userId) {

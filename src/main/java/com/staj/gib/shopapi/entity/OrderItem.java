@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Table(name = "order_item")
@@ -18,8 +19,11 @@ public class OrderItem extends BaseEntity {
     private Order order;
 
     @OneToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", updatable = false, insertable = false)
     private Product product;
+
+    @Column(name="product_id",nullable = false)
+    private UUID productId;
 
     short quantity;
 

@@ -5,8 +5,9 @@ import com.staj.gib.shopapi.dto.request.CreateUserDto;
 import com.staj.gib.shopapi.dto.response.ResponseUserDto;
 import com.staj.gib.shopapi.dto.request.UpdateUserDto;
 import com.staj.gib.shopapi.dto.mapper.UserMapper;
+import com.staj.gib.shopapi.enums.ErrorCode;
+import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.exception.InvalidPasswordException;
-import com.staj.gib.shopapi.exception.ResourceNotFoundException;
 import com.staj.gib.shopapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class UserService {
     private final CartService cartService;
 
     public ResponseUserDto getUser(UUID userID) {
-        User user = userRepository.findById(userID).orElseThrow(() -> new ResourceNotFoundException("User",userID));
+        User user = userRepository.findById(userID).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userID));
         return userMapper.userToResponseUserDto(user);
     }
 
@@ -38,7 +39,7 @@ public class UserService {
 
     public ResponseUserDto updateUser(UpdateUserDto updateUserDto) {
         User user = userRepository.findById(updateUserDto.getId()).orElseThrow(
-                () -> new ResourceNotFoundException("User", updateUserDto.getId()));
+                () -> new BusinessException(ErrorCode.USER_NOT_FOUND, updateUserDto.getId()));
         user = userMapper.updateUserDtoToUser(updateUserDto, user);
         User updatedUser = userRepository.save(user);
         return userMapper.userToResponseUserDto(updatedUser);

@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "\"order\"")  // order is reserved in postgresql
@@ -16,8 +17,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order extends BaseEntity{
+    @Column(name="user_id",nullable = false)
+    private UUID userId;
+
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="user_id" , updatable = false,insertable = false)
     private User user;
 
     @Column(name = "status")

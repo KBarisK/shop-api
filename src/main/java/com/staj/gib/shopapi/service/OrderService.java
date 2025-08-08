@@ -6,9 +6,10 @@ import com.staj.gib.shopapi.dto.response.*;
 import com.staj.gib.shopapi.entity.CashPayment;
 import com.staj.gib.shopapi.entity.Order;
 import com.staj.gib.shopapi.entity.OrderItem;
+import com.staj.gib.shopapi.enums.ErrorCode;
 import com.staj.gib.shopapi.enums.OrderStatus;
 import com.staj.gib.shopapi.enums.PaymentMethod;
-import com.staj.gib.shopapi.exception.ResourceNotFoundException;
+import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -40,14 +41,14 @@ public class OrderService {
 
     public OrderResponse placeOrder(OrderRequest orderRequest) {
         // 1. Validate and retrieve cart
-        CartDto cart = validateAndGetCart(orderRequest.getCartId());
+        CartOrderDto cart = validateAndGetCart(orderRequest.getCartId());
         
         // 2. Calculate total amount based on payment method
         BigDecimal totalAmount = calculateOrderTotal(cart.getCartItems(), orderRequest);
 
         // 3. Create and save initial order
         // TODO user needs to be set
-        Order order = createInitialOrder(totalAmount, orderRequest.getPaymentMethod());
+        Order order = createInitialOrder(cart.getUserId(),totalAmount, orderRequest.getPaymentMethod());
         
         // 4. Process cart items and update inventory
         List<OrderItem> orderItems = processCartItems(cart.getCartItems(), order);
@@ -63,8 +64,8 @@ public class OrderService {
         return orderMapper.toOrderResponse(savedOrder);
     }
 
-    private CartDto validateAndGetCart(UUID cartId) {
-        CartDto cart = cartService.getCart(cartId);
+    private CartOrderDto validateAndGetCart(UUID cartId) {
+        CartOrderDto cart = cartService.getCart(cartId);
         if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
             throw new IllegalArgumentException("Cart is empty, cannot place order");
         }
@@ -88,13 +89,14 @@ public class OrderService {
         }
     }
 
-    private Order createInitialOrder(BigDecimal totalAmount, PaymentMethod paymentMethod) {
+    private Order createInitialOrder(UUID userId,BigDecimal totalAmount, PaymentMethod paymentMethod) {
         Order order = new Order();
         order.setStatus(determineInitialOrderStatus(paymentMethod));
         order.setTotalAmount(totalAmount);
         order.setPaymentMethod(paymentMethod);
         order.setOrderItems(new ArrayList<>());
-        return orderRepository.save(order);
+        order.setUserId(userId);
+        return order;
     }
 
     private OrderStatus determineInitialOrderStatus(PaymentMethod paymentMethod) {
@@ -146,7 +148,7 @@ public class OrderService {
 
     public OrderResponse getOrder(UUID orderId) {
         Order order = this.orderRepository.findById(orderId)
-                .orElseThrow(()-> new ResourceNotFoundException("Order", orderId));
+                .orElseThrow(()-> new BusinessException(ErrorCode.ORDER_NOT_FOUND, orderId));
         return this.orderMapper.toOrderResponse(order);
     }
 
