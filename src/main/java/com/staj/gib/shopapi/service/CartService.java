@@ -10,15 +10,15 @@ import com.staj.gib.shopapi.entity.dto.mapper.CartMapper;
 import com.staj.gib.shopapi.enums.ErrorCode;
 import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.CartRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CartService {
 
@@ -35,6 +35,7 @@ public class CartService {
         return this.cartMapper.cartToCartDto(cart);
     }
 
+    @Transactional
     public CartDto addItemToCart(CartRequest cartRequest) {
         Cart cart = cartRepository.findByUser_Id(cartRequest.getUserId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.CART_FOR_USER_NOT_FOUND, cartRequest.getUserId()));
@@ -60,6 +61,7 @@ public class CartService {
         return this.cartMapper.cartToCartDto(savedCart);
     }
 
+    @Transactional
     public CartDto removeItemFromCart(CartRequest cartRequest) {
         Cart cart = cartRepository.findByUser_Id(cartRequest.getUserId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.CART_FOR_USER_NOT_FOUND, cartRequest.getUserId()));
@@ -79,6 +81,7 @@ public class CartService {
         return this.cartMapper.cartToCartDto(savedCart);
     }
 
+    @Transactional
     public void removeAllItemsFromCart(UUID cartId) {
         Cart cart  = cartRepository.findById(cartId).orElseThrow(() ->new BusinessException(ErrorCode.CART_NOT_FOUND,cartId));
         cart.getCartItems().clear();
@@ -91,6 +94,7 @@ public class CartService {
         return this.cartMapper.cartToCartOrderDto(cart);
     }
 
+    @Transactional
     public void createCart(UUID userId) {
         Cart newCart = this.cartMapper.createCartFromRequest(userId);
         this.cartRepository.save(newCart);

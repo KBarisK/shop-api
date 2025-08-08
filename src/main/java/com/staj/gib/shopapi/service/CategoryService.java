@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CategoryService {
     private final ProductCategoryRepository repository;
@@ -33,7 +33,6 @@ public class CategoryService {
         return mapper.mapCategory(category);
     }
 
-    @Transactional(readOnly = true)
     public List<CategoryResponse> getAllCategories() {
         return repository.findAll()
                 .stream()
@@ -41,6 +40,7 @@ public class CategoryService {
                 .toList();
     }
 
+    @Transactional
     public CategoryResponse createCategory(CreateCategoryRequest request) {
         ProductCategory category = mapper.requestToCategory(request);
 
@@ -50,6 +50,7 @@ public class CategoryService {
         return mapper.mapCategory(saved);
     }
 
+    @Transactional
     public CategoryResponse updateCategory(UpdateCategoryRequest request) {
         ProductCategory category = repository.findById(request.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_CATEGORY_NOT_FOUND, request.getId()));
@@ -71,6 +72,7 @@ public class CategoryService {
         return mapper.mapCategory(saved);
     }
 
+    @Transactional
     public void deleteCategory(UUID categoryId) {
         if (!repository.existsById(categoryId)) {
             throw new BusinessException(ErrorCode.PRODUCT_CATEGORY_NOT_FOUND, categoryId);

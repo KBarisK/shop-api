@@ -15,13 +15,12 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository repository;
     private final ProductMapper mapper;
 
-    @Transactional(readOnly = true)
     public ProductResponse getProduct(UUID productid) {
         Product product = repository.findById(productid).orElseThrow(()
                 -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, productid));
@@ -29,6 +28,7 @@ public class ProductService {
         return mapper.toResponse(product);
     }
 
+    @Transactional
     public ProductResponse createProduct(CreateProductRequest request) {
         Product product = mapper.toEntity(request);
 
@@ -37,6 +37,7 @@ public class ProductService {
         return mapper.toResponse(this.repository.save(product));
     }
 
+    @Transactional
     public ProductResponse updateProduct(UpdateProductRequest request){
         Product existingProduct = repository.findById(request.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, request.getId()));
@@ -48,6 +49,7 @@ public class ProductService {
         return mapper.toResponse(repository.save(existingProduct));
     }
 
+    @Transactional
     public void deleteProductById(UUID id){
         if (!repository.existsById(id)) {
             throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, id);
@@ -55,7 +57,6 @@ public class ProductService {
         repository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
     public List<ProductResponse> getAllProducts() {
         return repository.findAll()
                 .stream()
@@ -63,6 +64,7 @@ public class ProductService {
                 .toList();
     }
 
+    @Transactional
     public void decrementStock(UUID productId, int quantity) {
         if (quantity <= 0) throw new IllegalArgumentException("Quantity must be positive");
 

@@ -11,9 +11,9 @@ import com.staj.gib.shopapi.enums.OrderStatus;
 import com.staj.gib.shopapi.enums.PaymentMethod;
 import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.OrderRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OrderService {
 
@@ -39,6 +39,7 @@ public class OrderService {
     private final InstallmentPaymentService installmentPaymentService;
     private final ProductService productService;
 
+    @Transactional
     public OrderResponse placeOrder(OrderRequest orderRequest) {
         // 1. Validate and retrieve cart
         CartOrderDto cart = validateAndGetCart(orderRequest.getCartId());

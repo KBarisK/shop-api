@@ -12,10 +12,12 @@ import com.staj.gib.shopapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.staj.gib.shopapi.enums.UserType;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
@@ -29,6 +31,7 @@ public class UserService {
         return userMapper.userToResponseUserDto(user);
     }
 
+    @Transactional
     public ResponseUserDto saveUser(CreateUserDto createUserDto) throws InvalidPasswordException {
         User user = userMapper.createUserDtoToUser(createUserDto);
         user.setUserType(UserType.CUSTOMER);
@@ -37,6 +40,7 @@ public class UserService {
         return userMapper.userToResponseUserDto(savedUser);
     }
 
+    @Transactional
     public ResponseUserDto updateUser(UpdateUserDto updateUserDto) {
         User user = userRepository.findById(updateUserDto.getId()).orElseThrow(
                 () -> new BusinessException(ErrorCode.USER_NOT_FOUND, updateUserDto.getId()));
