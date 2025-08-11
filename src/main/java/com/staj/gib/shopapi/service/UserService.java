@@ -12,7 +12,6 @@ import com.staj.gib.shopapi.enums.UserType;
 import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.UserRepository;
 import com.staj.gib.shopapi.security.JwtService;
-import com.staj.gib.shopapi.security.UserSecurityDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

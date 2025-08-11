@@ -11,6 +11,7 @@ import com.staj.gib.shopapi.enums.ErrorCode;
 import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class CartService {
 
     private final ProductMapper productMapper;
 
-
+    @PreAuthorize("#userId == principal.id or hasRole('ROLE_ADMIN')" )
     public CartDto getActiveCart(UUID userId) {
         Cart cart = this.cartRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CART_FOR_USER_NOT_FOUND, userId));
