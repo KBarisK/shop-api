@@ -1,4 +1,4 @@
-package com.staj.gib.shopapi.entity.dto.mapper;
+package com.staj.gib.shopapi.dto.mapper;
 
 import com.staj.gib.shopapi.dto.response.CartDto;
 import com.staj.gib.shopapi.dto.response.CartItemDto;

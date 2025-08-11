@@ -9,5 +9,5 @@ public final class RoundingConstants {
     public static final RoundingMode ROUNDING = RoundingMode.HALF_UP;
 
     public static final BigDecimal DEFAULT_MONTHLY_INTEREST_RATE = BigDecimal.valueOf(0.0425);
-    
+
 }

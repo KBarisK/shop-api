@@ -6,7 +6,7 @@ import com.staj.gib.shopapi.dto.response.CartDto;
 import com.staj.gib.shopapi.dto.response.CartOrderDto;
 import com.staj.gib.shopapi.entity.Cart;
 import com.staj.gib.shopapi.entity.CartItem;
-import com.staj.gib.shopapi.entity.dto.mapper.CartMapper;
+import com.staj.gib.shopapi.dto.mapper.CartMapper;
 import com.staj.gib.shopapi.enums.ErrorCode;
 import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.CartRepository;
