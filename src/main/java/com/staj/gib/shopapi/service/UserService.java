@@ -10,7 +10,6 @@ import com.staj.gib.shopapi.entity.User;
 import com.staj.gib.shopapi.enums.ErrorCode;
 import com.staj.gib.shopapi.enums.UserType;
 import com.staj.gib.shopapi.exception.BusinessException;
-import com.staj.gib.shopapi.exception.InvalidPasswordException;
 import com.staj.gib.shopapi.repository.UserRepository;
 import com.staj.gib.shopapi.security.JwtService;
 import com.staj.gib.shopapi.security.UserSecurityDetails;
@@ -39,7 +38,7 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseUserDto saveUser(CreateUserDto createUserDto) throws InvalidPasswordException {
+    public ResponseUserDto saveUser(CreateUserDto createUserDto) {
         User user = userMapper.createUserDtoToUser(createUserDto);
         user.setUserType(UserType.CUSTOMER);
         User savedUser = userRepository.save(user);
