@@ -17,6 +17,7 @@ import com.staj.gib.shopapi.security.UserSecurityDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +27,10 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
-
+    private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-
     private final CartService cartService;
 
     public ResponseUserDto getUser(UUID userID) {
@@ -57,11 +56,6 @@ public class UserService {
         return userMapper.userToResponseUserDto(updatedUser);
     }
 
-    public UserSecurityDetails getUserSecurityDetails(String username) {
-        User user =this.userRepository.findByUsername(username).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, username));
-        return userMapper.userToUserSecurityDetails(user);
-    }
-
     @Transactional
     public UserResponse register(CreateUserDto createUserDto) throws InvalidPasswordException {
         User user = userMapper.createUserDtoToUser(createUserDto);
@@ -73,7 +67,7 @@ public class UserService {
     }
 
     public UserResponse login(LoginUser loginUser) throws InvalidPasswordException {
-        authenticationManager.authenticate(
+        Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword())
         );
 
