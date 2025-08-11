@@ -30,5 +30,6 @@ public interface UserMapper {
 
     UserSecurityDetails userToUserSecurityDetails(User user);
 
+    @Mapping(target = "user", source = "user")
     UserResponse userToUserResponse(User user,String token);
 }

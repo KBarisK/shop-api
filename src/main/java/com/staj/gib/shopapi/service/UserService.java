@@ -56,7 +56,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse register(CreateUserDto createUserDto) throws InvalidPasswordException {
+    public UserResponse register(CreateUserDto createUserDto) {
         User user = userMapper.createUserDtoToUser(createUserDto);
         user.setUserType(UserType.CUSTOMER);
         User savedUser = userRepository.save(user);
@@ -65,7 +65,7 @@ public class UserService {
         return userMapper.userToUserResponse(savedUser,token);
     }
 
-    public UserResponse login(LoginUser loginUser) throws InvalidPasswordException {
+    public UserResponse login(LoginUser loginUser) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword())
         );
