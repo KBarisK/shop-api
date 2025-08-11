@@ -30,11 +30,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.5.1'
     implementation 'org.springframework.boot:spring-boot-starter-security:3.5.3'
     implementation 'org.springframework.boot:spring-boot-starter-web:3.5.3'
+    implementation "io.jsonwebtoken:jjwt-api:0.12.6"
     implementation 'org.mapstruct:mapstruct:1.6.3'
+    implementation 'commons-codec:commons-codec:1.19.0'
     compileOnly 'org.projectlombok:lombok:1.18.38'
     developmentOnly 'org.springframework.boot:spring-boot-devtools:3.5.3'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose:3.5.3'
     runtimeOnly 'org.postgresql:postgresql:42.7.7'
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:0.12.6"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:0.12.6"
     annotationProcessor 'org.projectlombok:lombok:1.18.38'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:3.5.3'

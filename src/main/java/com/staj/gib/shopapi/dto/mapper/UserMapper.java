@@ -1,13 +1,14 @@
 package com.staj.gib.shopapi.dto.mapper;
 
-import com.staj.gib.shopapi.entity.User;
 import com.staj.gib.shopapi.dto.request.CreateUserDto;
-import com.staj.gib.shopapi.dto.response.ResponseUserDto;
 import com.staj.gib.shopapi.dto.request.UpdateUserDto;
+import com.staj.gib.shopapi.dto.response.ResponseUserDto;
+import com.staj.gib.shopapi.dto.response.UserResponse;
+import com.staj.gib.shopapi.entity.User;
+import com.staj.gib.shopapi.security.UserSecurityDetails;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -26,4 +27,8 @@ public interface UserMapper {
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "userType", ignore = true)
     User updateUserDtoToUser(UpdateUserDto updateUserDto,@MappingTarget User user);
+
+    UserSecurityDetails userToUserSecurityDetails(User user);
+
+    UserResponse userToUserResponse(User user,String token);
 }

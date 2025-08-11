@@ -1,9 +1,10 @@
 package com.staj.gib.shopapi.entity;
-import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
-import java.util.UUID;
+
 import com.staj.gib.shopapi.enums.UserType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.*;
 
 @Entity
 @Table(name = "\"user\"")  // user is reserved in postgresql

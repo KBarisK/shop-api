@@ -1,8 +1,10 @@
 package com.staj.gib.shopapi.controller;
 
 import com.staj.gib.shopapi.dto.request.CreateUserDto;
-import com.staj.gib.shopapi.dto.response.ResponseUserDto;
+import com.staj.gib.shopapi.dto.request.LoginUser;
 import com.staj.gib.shopapi.dto.request.UpdateUserDto;
+import com.staj.gib.shopapi.dto.response.ResponseUserDto;
+import com.staj.gib.shopapi.dto.response.UserResponse;
 import com.staj.gib.shopapi.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -34,5 +36,15 @@ public class UserController {
     @PatchMapping
     public ResponseUserDto updateUser(@Valid @RequestBody UpdateUserDto updateUserDto) {
         return this.userService.updateUser(updateUserDto);
+    }
+
+    @PostMapping("/login")
+    public UserResponse login(@Valid @RequestBody LoginUser loginUser) {
+        return this.userService.login(loginUser);
+    }
+
+    @PostMapping("/register")
+    public UserResponse register(@Valid @RequestBody CreateUserDto createUserDto) {
+        return this.userService.register(createUserDto);
     }
 }
