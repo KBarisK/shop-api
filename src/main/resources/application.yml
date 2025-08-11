@@ -20,8 +20,14 @@ spring:
     encoding: UTF-8
     fallback-to-system-locale: false
 
+  # for triggering NoHandlerFoundException for endpoints
+  web:
+    resources:
+      add-mappings: false
 
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
       - org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
+
+
