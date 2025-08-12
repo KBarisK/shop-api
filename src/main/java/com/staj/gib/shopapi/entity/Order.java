@@ -1,5 +1,6 @@
 package com.staj.gib.shopapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.staj.gib.shopapi.enums.OrderStatus;
 import com.staj.gib.shopapi.enums.PaymentMethod;
 import jakarta.persistence.*;
@@ -45,5 +46,6 @@ public class Order extends BaseEntity{
 
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<OrderItem> orderItems;
 }
