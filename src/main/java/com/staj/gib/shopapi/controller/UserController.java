@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,13 +25,6 @@ public class UserController {
     public ResponseUserDto getUser(@PathVariable @NotNull UUID userId)
     {
         return this.userService.getUser(userId);
-    }
-
-    @PostMapping("/create")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseUserDto createUser(@Valid @RequestBody CreateUserDto createUserDto) {
-        return userService.saveUser(createUserDto);
-
     }
 
     @PatchMapping
