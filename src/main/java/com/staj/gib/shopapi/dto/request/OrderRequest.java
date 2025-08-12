@@ -1,6 +1,9 @@
 package com.staj.gib.shopapi.dto.request;
 
+import com.staj.gib.shopapi.enums.InstallmentOption;
 import com.staj.gib.shopapi.enums.PaymentMethod;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 
@@ -18,7 +21,5 @@ public class OrderRequest implements Serializable {
     PaymentMethod paymentMethod;
 
     @NotNull
-    Integer installmentCount;
-
-    BigDecimal interestRate;
+    InstallmentOption installmentCount;
 }

@@ -77,6 +77,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
             DataIntegrityViolationException ex,  HttpServletRequest req) {
 
+        logger.error("DataIntegrityViolationException exception occurred", ex);
+
         ErrorResponse body = buildResponseBody(ErrorCode.DATA_INTEGRITY, null, req);
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);

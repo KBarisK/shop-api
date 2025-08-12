@@ -40,8 +40,7 @@ public class OrderValidator {
 
     public BigDecimal calculateOrderTotal(List<CartItemDto> cartItems, OrderRequest orderRequest) {
         if (orderRequest.getPaymentMethod() == PaymentMethod.PAYMENT_INSTALLMENT) {
-            validateInstallmentRequest(orderRequest);
-            return calculateTotalAmountWithInterest(cartItems, orderRequest.getInstallmentCount());
+            return calculateTotalAmountWithInterest(cartItems, orderRequest.getInstallmentCount().getValue());
         }
         return calculateTotalAmount(cartItems);
     }
@@ -71,15 +70,6 @@ public class OrderValidator {
                 .toList();
     }
 
-    private void validateInstallmentRequest(OrderRequest orderRequest) {
-        if (orderRequest.getInstallmentCount() <= 0) {
-            throw new IllegalArgumentException("Installment count must be greater than 0");
-        }
-        if (orderRequest.getInterestRate() == null || orderRequest.getInterestRate().compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Interest rate must be non-negative");
-        }
-    }
-
     private void validateCartItem(CartItemDto cartItem) {
         if (cartItem.getQuantity() <= 0) {
             throw new IllegalArgumentException("Cart item quantity must be greater than 0");
@@ -93,8 +83,8 @@ public class OrderValidator {
     private void handleInstallmentPayment(Order order, OrderRequest orderRequest) {
         installmentPaymentService.saveInstallmentPayment(
                 order,
-                orderRequest.getInterestRate(),
-                orderRequest.getInstallmentCount()
+                RoundingConstants.DEFAULT_MONTHLY_INTEREST_RATE,
+                orderRequest.getInstallmentCount().getValue()
         );
     }
 
@@ -145,6 +135,7 @@ public class OrderValidator {
 
     private OrderItem createOrderItem(CartItemDto cartItem) {
         OrderItem orderItem = orderMapper.cartItemDtoToOrderItem(cartItem);
+
         BigDecimal preTaxPrice = cartItem.getProduct().getPrice();
         BigDecimal price = getProductTotalPrice(cartItem);
         orderItem.setPrice(price);

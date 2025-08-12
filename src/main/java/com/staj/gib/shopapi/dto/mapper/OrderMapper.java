@@ -19,6 +19,8 @@ public interface OrderMapper {
     OrderResponse toOrderResponse(Order order);
 
     @Mapping(source = "product.id", target = "productId")
+    @Mapping(target = "id",  ignore = true)
+    @Mapping(target = "product",  ignore = true)
     OrderItem cartItemDtoToOrderItem(CartItemDto cartItemDto);
 
     List<OrderResponse> toOrderResponseList(List<Order> orders);

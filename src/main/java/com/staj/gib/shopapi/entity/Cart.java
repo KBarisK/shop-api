@@ -18,7 +18,7 @@ public class Cart extends BaseEntity {
     @Column(name="user_id", nullable = false)
     private UUID userId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name="user_id", insertable = false, updatable = false)
     private User user;
 

@@ -38,7 +38,6 @@ public class TaxService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')" )
     public TaxResponse createTax(TaxRequest request) {
         Tax tax = mapper.toEntity(request);
         tax = repository.save(tax);

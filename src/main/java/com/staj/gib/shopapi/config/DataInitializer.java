@@ -8,9 +8,12 @@ import com.staj.gib.shopapi.service.CategoryService;
 import com.staj.gib.shopapi.service.TaxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,19 +21,17 @@ import java.util.ArrayList;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class DataInitializer implements CommandLineRunner {
+public class DataInitializer {
 
     private final TaxService taxService;
     private final CategoryService categoryService;
 
-    @Override
+    @EventListener(ApplicationReadyEvent.class)
     @Transactional
-    public void run(String... args) throws Exception {
+    public void initData() {
         log.info("Starting data initialization...");
-
         initializeTaxes();
         initializeCategories();
-
         log.info("Data initialization completed.");
     }
 
