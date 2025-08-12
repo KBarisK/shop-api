@@ -1,21 +1,19 @@
 package com.staj.gib.shopapi.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.staj.gib.shopapi.constant.RoundingConstants;
 import com.staj.gib.shopapi.entity.Installment;
 import com.staj.gib.shopapi.entity.InstallmentPayment;
 import com.staj.gib.shopapi.entity.Order;
 import com.staj.gib.shopapi.enums.InstallmentStatus;
 import com.staj.gib.shopapi.repository.InstallmentPaymentRepository;
-
+import com.staj.gib.shopapi.service.validator.InstallmentPaymentValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,30 +30,17 @@ public class InstallmentPaymentService {
     }
 
     private void generateInstallments(InstallmentPayment installmentPayment, BigDecimal totalAmount, int installmentCount) {
-
-        BigDecimal installmentAmount = totalAmount.divide(java.math.BigDecimal.valueOf(installmentCount), RoundingConstants.SCALE, RoundingConstants.ROUNDING);
-        
-        // Handle rounding remainder for the last installment
-        BigDecimal remainingAmount = totalAmount;
+        List<BigDecimal> amounts = InstallmentPaymentValidator.calculateInstallmentAmounts(totalAmount, installmentCount);
         List<Installment> installments = new ArrayList<>();
-        
-        // Generate installments
-        for (int i = 1; i <= installmentCount; i++) {
+
+        for (int i = 0; i < installmentCount; i++) {
             Installment installment = new Installment();
-            
-            // For the last installment, use the remaining amount to handle rounding differences
-            BigDecimal currentInstallmentAmount = (i == installmentCount) 
-                ? remainingAmount 
-                : installmentAmount;
-            
-            installment.setAmount(currentInstallmentAmount);
+            installment.setAmount(amounts.get(i));
             installment.setInstallmentPayment(installmentPayment);
-            installment.setDueDate(LocalDateTime.now().plusMonths(i));
+            installment.setDueDate(LocalDateTime.now().plusMonths(i + 1));
             installment.setStatus(InstallmentStatus.UNPAID);
             installment.setLateFee(BigDecimal.ZERO);
-            
             installments.add(installment);
-            remainingAmount = remainingAmount.subtract(currentInstallmentAmount);
         }
 
         installmentPayment.setInstallments(installments);

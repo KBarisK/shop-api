@@ -1,4 +1,170 @@
 package com.staj.gib.shopapi.service.validator;
 
+import com.staj.gib.shopapi.constant.RoundingConstants;
+import com.staj.gib.shopapi.dto.mapper.OrderMapper;
+import com.staj.gib.shopapi.dto.request.InitialOrderRequest;
+import com.staj.gib.shopapi.dto.request.OrderRequest;
+import com.staj.gib.shopapi.dto.response.*;
+import com.staj.gib.shopapi.entity.CashPayment;
+import com.staj.gib.shopapi.entity.Order;
+import com.staj.gib.shopapi.entity.OrderItem;
+import com.staj.gib.shopapi.enums.PaymentMethod;
+import com.staj.gib.shopapi.service.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
+@Component
+@RequiredArgsConstructor
 public class OrderValidator {
+    private final CartService cartService;
+    private final ProductService productService;
+    private final InstallmentPaymentService  installmentPaymentService;
+    private final CategoryService categoryService;
+    private final TaxService taxService;
+    private final OrderMapper orderMapper;
+
+
+    public CartOrderDto validateAndGetCart(UUID cartId) {
+        CartOrderDto cart = cartService.getCart(cartId);
+        if (Objects.isNull(cart.getCartItems())|| cart.getCartItems().isEmpty()) {
+            throw new IllegalArgumentException("Cart is empty, cannot place order");
+        }
+        return cart;
+    }
+
+    public BigDecimal calculateOrderTotal(List<CartItemDto> cartItems, OrderRequest orderRequest) {
+        if (orderRequest.getPaymentMethod() == PaymentMethod.PAYMENT_INSTALLMENT) {
+            validateInstallmentRequest(orderRequest);
+            return calculateTotalAmountWithInterest(cartItems, orderRequest.getInstallmentCount());
+        }
+        return calculateTotalAmount(cartItems);
+    }
+
+    public void handlePaymentMethod(Order order, OrderRequest orderRequest) {
+        switch (orderRequest.getPaymentMethod()) {
+            case PAYMENT_INSTALLMENT -> handleInstallmentPayment(order, orderRequest);
+            case PAYMENT_CASH -> handleCashPayment(order);
+            default -> throw new IllegalArgumentException("Unsupported payment method: " + orderRequest.getPaymentMethod());
+        }
+    }
+
+    public Order createInitialOrder(UUID userId, BigDecimal totalAmount, PaymentMethod paymentMethod) {
+        InitialOrderRequest request = new InitialOrderRequest(userId, totalAmount, paymentMethod);
+        return orderMapper.toInitialOrder(request);
+    }
+
+    public List<OrderItem> processCartItems(List<CartItemDto> cartItems, Order order) {
+        return cartItems.stream()
+                .map(cartItem -> {
+                    validateCartItem(cartItem);
+                    OrderItem orderItem = createOrderItem(cartItem);
+                    orderItem.setOrder(order);
+                    productService.decrementStock(cartItem.getProduct().getId(), cartItem.getQuantity());
+                    return orderItem;
+                })
+                .toList();
+    }
+
+    private void validateInstallmentRequest(OrderRequest orderRequest) {
+        if (orderRequest.getInstallmentCount() <= 0) {
+            throw new IllegalArgumentException("Installment count must be greater than 0");
+        }
+        if (orderRequest.getInterestRate() == null || orderRequest.getInterestRate().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Interest rate must be non-negative");
+        }
+    }
+
+    private void validateCartItem(CartItemDto cartItem) {
+        if (cartItem.getQuantity() <= 0) {
+            throw new IllegalArgumentException("Cart item quantity must be greater than 0");
+        }
+        if (cartItem.getProduct() == null) {
+            throw new IllegalArgumentException("Cart item must have a valid product");
+        }
+    }
+
+
+    private void handleInstallmentPayment(Order order, OrderRequest orderRequest) {
+        installmentPaymentService.saveInstallmentPayment(
+                order,
+                orderRequest.getInterestRate(),
+                orderRequest.getInstallmentCount()
+        );
+    }
+
+    private void handleCashPayment(Order order) {
+        CashPayment cashPayment = new CashPayment();
+        cashPayment.setOrder(order);
+        order.setCashPayment(cashPayment);
+    }
+
+
+    private BigDecimal calculateTotalAmountWithInterest(List<CartItemDto> cartItems, int installmentCount){
+        BigDecimal totalAmount = calculateTotalAmount(cartItems);
+
+        BigDecimal monthlyRate = RoundingConstants.DEFAULT_MONTHLY_INTEREST_RATE;
+
+        // Annuity calculation: P × [r_eff × (1 + r_eff)^n] / [(1 + r_eff)^n – 1]
+        BigDecimal onePlusRate = BigDecimal.ONE.add(monthlyRate);
+        BigDecimal onePlusRatePowerN = onePlusRate.pow(installmentCount);
+
+        // Numerator: r_eff × (1 + r_eff)^n
+        BigDecimal numerator = monthlyRate.multiply(onePlusRatePowerN);
+
+        // Denominator: (1 + r_eff)^n – 1
+        BigDecimal denominator = onePlusRatePowerN.subtract(BigDecimal.ONE);
+
+        BigDecimal monthlyInstallment = totalAmount.multiply(
+                numerator.divide(denominator, RoundingConstants.SCALE, RoundingConstants.ROUNDING)
+        );
+
+        return monthlyInstallment.multiply(BigDecimal.valueOf(installmentCount));
+    }
+
+    private BigDecimal calculateTotalAmount(List<CartItemDto> cartItems) {
+        BigDecimal totalPrice = BigDecimal.ZERO;
+
+        for (CartItemDto cartItem : cartItems) {
+            BigDecimal totalItemPrice = getProductTotalPrice(cartItem);
+
+            BigDecimal itemTotalWithQuantity = totalItemPrice
+                    .multiply(BigDecimal.valueOf(cartItem.getQuantity()))
+                    .setScale(RoundingConstants.SCALE, RoundingConstants.ROUNDING);
+
+            totalPrice = totalPrice.add(itemTotalWithQuantity);
+        }
+        return totalPrice.setScale(RoundingConstants.SCALE, RoundingConstants.ROUNDING);
+    }
+
+
+    private OrderItem createOrderItem(CartItemDto cartItem) {
+        OrderItem orderItem = orderMapper.cartItemDtoToOrderItem(cartItem);
+        BigDecimal preTaxPrice = cartItem.getProduct().getPrice();
+        BigDecimal price = getProductTotalPrice(cartItem);
+        orderItem.setPrice(price);
+        orderItem.setPreTaxPrice(preTaxPrice);
+        return orderItem;
+    }
+
+    private BigDecimal getProductTotalPrice(CartItemDto cartItem) {
+        ProductResponse product = cartItem.getProduct();
+        BigDecimal productPrice = product.getPrice().setScale(RoundingConstants.SCALE, RoundingConstants.ROUNDING);
+        BigDecimal totalItemPrice = productPrice;
+
+        CategoryResponse category = categoryService.getCategory(product.getCategoryId());
+        List<CategoryTaxResponse> categoryTaxResponse = category.getTaxes();
+        List<TaxDetailDto> taxDetails = taxService.calculateTaxBreakdown(productPrice, categoryTaxResponse);
+
+        for (TaxDetailDto taxDetail : taxDetails) {
+            totalItemPrice = totalItemPrice.add(
+                    taxDetail.getAmount()
+            );
+        }
+        return totalItemPrice.setScale(RoundingConstants.SCALE, RoundingConstants.ROUNDING);
+    }
 }
