@@ -38,16 +38,7 @@ public class UserService {
                 -> new BusinessException(ErrorCode.USER_NOT_FOUND, userID));
         return userMapper.userToResponseUserDto(user);
     }
-
-    @Transactional
-    public ResponseUserDto saveUser(CreateUserDto createUserDto) {
-        User user = userMapper.createUserDtoToUser(createUserDto, passwordEncoder);
-        user.setUserType(UserType.CUSTOMER);
-        User savedUser = userRepository.save(user);
-        this.cartService.createCart(savedUser.getId());
-        return userMapper.userToResponseUserDto(savedUser);
-    }
-
+    
     @Transactional
     public ResponseUserDto updateUser(UpdateUserDto updateUserDto) {
         User user = userRepository.findById(updateUserDto.getId()).orElseThrow(
