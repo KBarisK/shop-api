@@ -1,6 +1,5 @@
 package com.staj.gib.shopapi.dto.response;
 
-import com.staj.gib.shopapi.entity.OrderItem;
 import com.staj.gib.shopapi.enums.OrderStatus;
 import com.staj.gib.shopapi.enums.PaymentMethod;
 import lombok.Value;
@@ -22,5 +21,5 @@ public class OrderResponse implements Serializable {
     OrderStatus status;
     BigDecimal totalAmount;
     PaymentMethod paymentMethod;
-    List<OrderItem> orderItems;
+    List<OrderItemDto> orderItems;
 }

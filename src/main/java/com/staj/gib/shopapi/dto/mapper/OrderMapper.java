@@ -2,6 +2,7 @@ package com.staj.gib.shopapi.dto.mapper;
 
 import com.staj.gib.shopapi.dto.request.InitialOrderRequest;
 import com.staj.gib.shopapi.dto.response.CartItemDto;
+import com.staj.gib.shopapi.dto.response.OrderItemDto;
 import com.staj.gib.shopapi.dto.response.OrderResponse;
 import com.staj.gib.shopapi.entity.Order;
 import com.staj.gib.shopapi.entity.OrderItem;
@@ -29,6 +30,8 @@ public interface OrderMapper {
     @Mapping(target = "orderItems", expression = "java(new ArrayList<>())")
     @Mapping(target = "userId", source = "request.userId")
     Order toInitialOrder(InitialOrderRequest request);
+
+    OrderItemDto toOrderItemDto(OrderItem orderItem);
 
     default OrderStatus determineInitialOrderStatus(PaymentMethod paymentMethod) {
         return paymentMethod == PaymentMethod.PAYMENT_CASH
