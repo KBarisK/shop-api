@@ -14,6 +14,7 @@ public class ProductResponse implements Serializable {
     LocalDateTime updatedAt;
     String productName;
     BigDecimal price;
+    BigDecimal afterTaxPrice;
     String description;
     Integer stock;
     UUID categoryId;

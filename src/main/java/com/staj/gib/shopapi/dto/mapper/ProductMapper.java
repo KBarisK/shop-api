@@ -6,16 +6,14 @@ import com.staj.gib.shopapi.dto.response.ProductResponse;
 import com.staj.gib.shopapi.entity.Product;
 import org.mapstruct.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Mapper(config = CentralMapperConfig.class, uses = ProductImageMapper.class)
 public interface ProductMapper {
 
-    @Mapping(target = "categoryId", source = "category.id")
-    ProductResponse toResponse(Product entity);
-
-    @Mapping(target = "id", source = "productId")
-    Product productFromId(UUID productId);
+    @Mapping(target = "categoryId", source = "entity.category.id")
+    ProductResponse toResponse(Product entity, BigDecimal afterTaxPrice);
 
     @Mapping(target = "images", source = "imageUrls")
     Product toEntity(CreateProductRequest request);
