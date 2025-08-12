@@ -10,8 +10,8 @@ import org.mapstruct.*;
 import java.util.List;
 import java.util.UUID;
 
-@Mapper(componentModel = "spring")
-public interface CartMapper {
+@Mapper(config = CentralMapperConfig.class)
+public interface CartMapper{
 
     CartItemDto cartItemToCartItemDto(CartItem cartItem);
 
@@ -22,10 +22,5 @@ public interface CartMapper {
     @Mapping(target = "cartItems", expression = "java(new java.util.ArrayList<>())")
     Cart createCartFromRequest(UUID userId);
 
-    Cart cartOrderDtoToCart(CartOrderDto cartOrderDto);
-
     CartOrderDto cartToCartOrderDto(Cart cart);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Cart partialUpdate(CartOrderDto cartOrderDto, @MappingTarget Cart cart);
 }

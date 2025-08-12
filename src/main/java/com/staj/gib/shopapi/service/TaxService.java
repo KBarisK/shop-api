@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ public class TaxService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')" )
     public TaxResponse createTax(TaxRequest request) {
         Tax tax = mapper.toEntity(request);
         tax = repository.save(tax);

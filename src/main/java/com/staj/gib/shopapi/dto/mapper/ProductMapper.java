@@ -8,7 +8,7 @@ import org.mapstruct.*;
 
 import java.util.UUID;
 
-@Mapper(componentModel = "spring", uses = ProductImageMapper.class)
+@Mapper(config = CentralMapperConfig.class, uses = ProductImageMapper.class)
 public interface ProductMapper {
 
     @Mapping(target = "categoryId", source = "category.id")
@@ -17,16 +17,9 @@ public interface ProductMapper {
     @Mapping(target = "id", source = "productId")
     Product productFromId(UUID productId);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "images", source = "imageUrls")
     Product toEntity(CreateProductRequest request);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "images", source = "imageUrls")
     void updateEntity(@MappingTarget Product existingProduct, UpdateProductRequest request);
 

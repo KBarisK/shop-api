@@ -7,7 +7,7 @@ import com.staj.gib.shopapi.entity.ProductCategory;
 import com.staj.gib.shopapi.entity.ProductCategoryTax;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(config = CentralMapperConfig.class)
 public interface CategoryMapper {
 
     CategoryResponse mapCategory(ProductCategory entity);

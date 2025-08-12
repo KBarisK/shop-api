@@ -4,7 +4,7 @@ import com.staj.gib.shopapi.dto.response.InstallmentPaymentDto;
 import com.staj.gib.shopapi.entity.InstallmentPayment;
 import org.mapstruct.*;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(config = CentralMapperConfig.class)
 public interface InstallmentPaymentMapper {
     InstallmentPayment toEntity(InstallmentPaymentDto installmentPaymentDto);
 

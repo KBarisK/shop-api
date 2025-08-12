@@ -13,6 +13,7 @@ import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.UserRepository;
 import com.staj.gib.shopapi.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

@@ -12,23 +12,14 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Mapper(componentModel = "spring")
+@Mapper(config = CentralMapperConfig.class)
 public interface UserMapper {
     ResponseUserDto userToResponseUserDto(User user);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "version", ignore = true)
-    @Mapping(target = "userType", ignore = true)
+
     @Mapping(target = "password", expression = "java(passwordEncoder.encode(dto.getPassword()))")
     User createUserDtoToUser(CreateUserDto dto, @Context PasswordEncoder passwordEncoder);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "version", ignore = true)
-    @Mapping(target = "userType", ignore = true)
     @Mapping(target = "password", expression = "java(passwordEncoder.encode(dto.getPassword()))")
     User updateUserDtoToUser(UpdateUserDto dto,@MappingTarget User user, @Context PasswordEncoder passwordEncoder);
 
