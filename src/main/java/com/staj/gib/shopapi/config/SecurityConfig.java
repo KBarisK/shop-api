@@ -1,5 +1,6 @@
-package com.staj.gib.shopapi.security;
+package com.staj.gib.shopapi.config;
 
+import com.staj.gib.shopapi.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +34,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/user/*","/swagger-ui/**"
-                                ,"v3/api-docs/**").permitAll()
+                                ,"/v3/api-docs/**").permitAll()
 
                         .requestMatchers("/auth/customer/**").hasAuthority("ROLE_CUSTOMER")
                         .requestMatchers("/auth/admin/**").hasAuthority("ROLE_ADMIN")

@@ -9,7 +9,9 @@ import com.staj.gib.shopapi.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -39,12 +41,19 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public UserResponse login(@Valid @RequestBody LoginUser loginUser) {
-        return this.userService.login(loginUser);
+    public ResponseEntity<ResponseUserDto> login(@Valid @RequestBody LoginUser loginUser) {
+        UserResponse userResponse = userService.login(loginUser);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + userResponse.getToken())
+                .body(userResponse.getUser());
     }
 
     @PostMapping("/register")
-    public UserResponse register(@Valid @RequestBody CreateUserDto createUserDto) {
-        return this.userService.register(createUserDto);
+    public ResponseEntity<ResponseUserDto> register(@Valid @RequestBody CreateUserDto createUserDto) {
+        UserResponse userResponse = this.userService.register(createUserDto);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + userResponse.getToken())
+                .body(userResponse.getUser());
     }
 }

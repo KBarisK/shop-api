@@ -6,9 +6,11 @@ import com.staj.gib.shopapi.dto.response.ResponseUserDto;
 import com.staj.gib.shopapi.dto.response.UserResponse;
 import com.staj.gib.shopapi.entity.User;
 import com.staj.gib.shopapi.security.UserSecurityDetails;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -19,14 +21,16 @@ public interface UserMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "userType", ignore = true)
-    User createUserDtoToUser(CreateUserDto user);
+    @Mapping(target = "password", expression = "java(passwordEncoder.encode(dto.getPassword()))")
+    User createUserDtoToUser(CreateUserDto dto, @Context PasswordEncoder passwordEncoder);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "userType", ignore = true)
-    User updateUserDtoToUser(UpdateUserDto updateUserDto,@MappingTarget User user);
+    @Mapping(target = "password", expression = "java(passwordEncoder.encode(dto.getPassword()))")
+    User updateUserDtoToUser(UpdateUserDto dto,@MappingTarget User user, @Context PasswordEncoder passwordEncoder);
 
     UserSecurityDetails userToUserSecurityDetails(User user);
 

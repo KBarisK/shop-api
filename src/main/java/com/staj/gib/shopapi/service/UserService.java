@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,15 +31,17 @@ public class UserService {
     private final UserMapper userMapper;
     private final JwtService jwtService;
     private final CartService cartService;
+    private final PasswordEncoder passwordEncoder;
 
     public ResponseUserDto getUser(UUID userID) {
-        User user = userRepository.findById(userID).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, userID));
+        User user = userRepository.findById(userID).orElseThrow(()
+                -> new BusinessException(ErrorCode.USER_NOT_FOUND, userID));
         return userMapper.userToResponseUserDto(user);
     }
 
     @Transactional
     public ResponseUserDto saveUser(CreateUserDto createUserDto) {
-        User user = userMapper.createUserDtoToUser(createUserDto);
+        User user = userMapper.createUserDtoToUser(createUserDto, passwordEncoder);
         user.setUserType(UserType.CUSTOMER);
         User savedUser = userRepository.save(user);
         this.cartService.createCart(savedUser.getId());
@@ -49,16 +52,17 @@ public class UserService {
     public ResponseUserDto updateUser(UpdateUserDto updateUserDto) {
         User user = userRepository.findById(updateUserDto.getId()).orElseThrow(
                 () -> new BusinessException(ErrorCode.USER_NOT_FOUND, updateUserDto.getId()));
-        user = userMapper.updateUserDtoToUser(updateUserDto, user);
+        user = userMapper.updateUserDtoToUser(updateUserDto, user, passwordEncoder);
         User updatedUser = userRepository.save(user);
         return userMapper.userToResponseUserDto(updatedUser);
     }
 
     @Transactional
     public UserResponse register(CreateUserDto createUserDto) {
-        User user = userMapper.createUserDtoToUser(createUserDto);
+        User user = userMapper.createUserDtoToUser(createUserDto, passwordEncoder);
         user.setUserType(UserType.CUSTOMER);
         User savedUser = userRepository.save(user);
+
         this.cartService.createCart(savedUser.getId());
         String token = this.jwtService.generateToken(savedUser.getUsername());
         return userMapper.userToUserResponse(savedUser,token);
