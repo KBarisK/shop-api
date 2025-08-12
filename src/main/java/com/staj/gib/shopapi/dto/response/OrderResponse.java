@@ -1,5 +1,6 @@
 package com.staj.gib.shopapi.dto.response;
 
+import com.staj.gib.shopapi.entity.OrderItem;
 import com.staj.gib.shopapi.enums.OrderStatus;
 import com.staj.gib.shopapi.enums.PaymentMethod;
 import lombok.Value;
@@ -7,6 +8,7 @@ import lombok.Value;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -20,4 +22,5 @@ public class OrderResponse implements Serializable {
     OrderStatus status;
     BigDecimal totalAmount;
     PaymentMethod paymentMethod;
+    List<OrderItem> orderItems;
 }
