@@ -1,12 +1,14 @@
 package com.staj.gib.shopapi.service;
 
 import com.staj.gib.shopapi.dto.mapper.OrderMapper;
-import com.staj.gib.shopapi.dto.request.OrderRequest;
+import com.staj.gib.shopapi.dto.request.CashOrderRequest;
+import com.staj.gib.shopapi.dto.request.InstallmentOrderRequest;
 import com.staj.gib.shopapi.dto.response.CartOrderDto;
 import com.staj.gib.shopapi.dto.response.OrderResponse;
 import com.staj.gib.shopapi.entity.Order;
 import com.staj.gib.shopapi.entity.OrderItem;
 import com.staj.gib.shopapi.enums.ErrorCode;
+import com.staj.gib.shopapi.enums.PaymentMethod;
 import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.OrderRepository;
 import com.staj.gib.shopapi.service.validator.OrderValidator;
@@ -31,21 +33,33 @@ public class OrderService {
     private final OrderValidator orderValidator;
 
     @Transactional
-    public OrderResponse placeOrder(OrderRequest orderRequest) {
-        CartOrderDto cart = orderValidator.validateAndGetCart(orderRequest.getCartId());
+    public OrderResponse placeCashOrder(CashOrderRequest orderRequest) {
+        return placeOrderInternal(orderRequest.getCartId(), PaymentMethod.PAYMENT_CASH,
+                0);
+    }
 
-        BigDecimal totalAmount = orderValidator.calculateOrderTotal(cart.getCartItems(), orderRequest);
+    @Transactional
+    public OrderResponse placeInstallmentOrder(InstallmentOrderRequest orderRequest) {
+        return placeOrderInternal(orderRequest.getCartId(), PaymentMethod.PAYMENT_INSTALLMENT,
+                orderRequest.getInstallmentCount().getValue());
+    }
 
-        Order order = orderValidator.createInitialOrder(cart.getUserId(),totalAmount, orderRequest.getPaymentMethod());
+
+    private OrderResponse placeOrderInternal(UUID cartId, PaymentMethod paymentMethod, int installmentCount) {
+        CartOrderDto cart = orderValidator.validateAndGetCart(cartId);
+
+        BigDecimal totalAmount = orderValidator.calculateOrderTotal(cart.getCartItems(), paymentMethod, installmentCount);
+
+        Order order = orderValidator.createInitialOrder(cart.getUserId(),totalAmount, paymentMethod);
 
         List<OrderItem> orderItems = orderValidator.processCartItems(cart.getCartItems(), order);
         order.setOrderItems(orderItems);
 
-        orderValidator.handlePaymentMethod(order, orderRequest);
+        orderValidator.handlePaymentMethod(order, paymentMethod, installmentCount);
         
         Order savedOrder = orderRepository.save(order);
 
-        cartService.removeAllItemsFromCart(orderRequest.getCartId());
+        cartService.removeAllItemsFromCart(cartId);
         
         return orderMapper.toOrderResponse(savedOrder);
     }

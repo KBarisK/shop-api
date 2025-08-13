@@ -12,14 +12,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Value
-public class OrderRequest implements Serializable {
-
+public class CashOrderRequest implements Serializable {
     @NotNull
     UUID cartId;
-
-    @NotNull
-    PaymentMethod paymentMethod;
-
-    @NotNull
-    InstallmentOption installmentCount;
 }

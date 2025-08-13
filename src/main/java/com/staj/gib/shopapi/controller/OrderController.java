@@ -1,6 +1,7 @@
 package com.staj.gib.shopapi.controller;
 
-import com.staj.gib.shopapi.dto.request.OrderRequest;
+import com.staj.gib.shopapi.dto.request.CashOrderRequest;
+import com.staj.gib.shopapi.dto.request.InstallmentOrderRequest;
 import com.staj.gib.shopapi.dto.response.OrderResponse;
 import com.staj.gib.shopapi.service.OrderService;
 import jakarta.validation.Valid;
@@ -18,9 +19,14 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/place")
-    public OrderResponse placeOrder(@Valid @RequestBody OrderRequest orderRequest) {
-        return orderService.placeOrder(orderRequest);
+    @PostMapping("/installment")
+    public OrderResponse placeInstallmentOrder(@Valid @RequestBody InstallmentOrderRequest orderRequest) {
+        return orderService.placeInstallmentOrder(orderRequest);
+    }
+
+    @PostMapping("/cash")
+    public OrderResponse placeCashOrder(@Valid @RequestBody CashOrderRequest orderRequest) {
+        return orderService.placeCashOrder(orderRequest);
     }
 
     @GetMapping("/{orderId}")

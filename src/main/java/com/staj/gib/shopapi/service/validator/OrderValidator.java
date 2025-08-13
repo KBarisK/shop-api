@@ -2,9 +2,8 @@ package com.staj.gib.shopapi.service.validator;
 
 import com.staj.gib.shopapi.constant.RoundingConstants;
 import com.staj.gib.shopapi.dto.mapper.OrderMapper;
-import com.staj.gib.shopapi.dto.mapper.ProductMapper;
 import com.staj.gib.shopapi.dto.request.InitialOrderRequest;
-import com.staj.gib.shopapi.dto.request.OrderRequest;
+import com.staj.gib.shopapi.dto.request.InstallmentOrderRequest;
 import com.staj.gib.shopapi.dto.response.*;
 import com.staj.gib.shopapi.entity.CashPayment;
 import com.staj.gib.shopapi.entity.Order;
@@ -38,18 +37,19 @@ public class OrderValidator {
         return cart;
     }
 
-    public BigDecimal calculateOrderTotal(List<CartItemDto> cartItems, OrderRequest orderRequest) {
-        if (orderRequest.getPaymentMethod() == PaymentMethod.PAYMENT_INSTALLMENT) {
-            return calculateTotalAmountWithInterest(cartItems, orderRequest.getInstallmentCount().getValue());
+    public BigDecimal calculateOrderTotal(List<CartItemDto> cartItems,
+                                          PaymentMethod paymentMethod, int installmentCount) {
+        if (paymentMethod == PaymentMethod.PAYMENT_INSTALLMENT) {
+            return calculateTotalAmountWithInterest(cartItems, installmentCount);
         }
         return calculateTotalAmount(cartItems);
     }
 
-    public void handlePaymentMethod(Order order, OrderRequest orderRequest) {
-        switch (orderRequest.getPaymentMethod()) {
-            case PAYMENT_INSTALLMENT -> handleInstallmentPayment(order, orderRequest);
+    public void handlePaymentMethod(Order order, PaymentMethod paymentMethod, int installmentCount) {
+        switch (paymentMethod) {
+            case PAYMENT_INSTALLMENT -> handleInstallmentPayment(order, installmentCount);
             case PAYMENT_CASH -> handleCashPayment(order);
-            default -> throw new IllegalArgumentException("Unsupported payment method: " + orderRequest.getPaymentMethod());
+            default -> throw new IllegalArgumentException("Unsupported payment method: " + paymentMethod);
         }
     }
 
@@ -80,11 +80,11 @@ public class OrderValidator {
     }
 
 
-    private void handleInstallmentPayment(Order order, OrderRequest orderRequest) {
+    private void handleInstallmentPayment(Order order, int installmentCount) {
         installmentPaymentService.saveInstallmentPayment(
                 order,
                 RoundingConstants.DEFAULT_MONTHLY_INTEREST_RATE,
-                orderRequest.getInstallmentCount().getValue()
+                installmentCount
         );
     }
 
