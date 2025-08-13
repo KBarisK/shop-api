@@ -1,10 +1,14 @@
 package com.staj.gib.shopapi.service;
 
+import com.staj.gib.shopapi.dto.mapper.InstallmentMapper;
+import com.staj.gib.shopapi.dto.mapper.InstallmentPaymentMapper;
 import com.staj.gib.shopapi.dto.mapper.OrderMapper;
 import com.staj.gib.shopapi.dto.request.CashOrderRequest;
 import com.staj.gib.shopapi.dto.request.InstallmentOrderRequest;
 import com.staj.gib.shopapi.dto.response.CartOrderDto;
+import com.staj.gib.shopapi.dto.response.InstallmentPaymentDto;
 import com.staj.gib.shopapi.dto.response.OrderResponse;
+import com.staj.gib.shopapi.entity.Installment;
 import com.staj.gib.shopapi.entity.Order;
 import com.staj.gib.shopapi.entity.OrderItem;
 import com.staj.gib.shopapi.enums.ErrorCode;
@@ -28,6 +32,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     private final OrderMapper orderMapper;
+    private final InstallmentPaymentMapper installmentPaymentMapper;
 
     private final CartService cartService;
     private final OrderValidator orderValidator;
@@ -74,5 +79,14 @@ public class OrderService {
         return this.orderMapper.toOrderResponse(order);
     }
 
+    public InstallmentPaymentDto getInstallmentPayment(UUID orderId){
+        Order order = this.orderRepository.findById(orderId)
+                .orElseThrow(()-> new BusinessException(ErrorCode.ORDER_NOT_FOUND, orderId));
+
+        if(order.getPaymentMethod() != PaymentMethod.PAYMENT_INSTALLMENT)
+            throw new BusinessException(ErrorCode.INVALID_ORDER_TYPE, orderId);
+
+        return this.installmentPaymentMapper.toDto(order.getInstallmentPayment());
+    }
 
 }

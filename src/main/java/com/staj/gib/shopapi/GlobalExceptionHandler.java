@@ -228,7 +228,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleBusinessExceptionInternal(businessEx, status, req);
     }
 
-    /*
+
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             org.springframework.http.converter.HttpMessageNotReadableException ex,
@@ -236,10 +236,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatusCode status,
             WebRequest request) {
 
-        // You can inspect `ex.getMostSpecificCause()` to decide the message
         BusinessException businessEx = new BusinessException(
-                ErrorCode.HTTP_MESSAGE_NOT_READABLE,
-                ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage()
+                ErrorCode.HTTP_MESSAGE_NOT_READABLE
         );
 
         ServletWebRequest servletWebReq = (ServletWebRequest) request;
@@ -247,7 +245,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 businessEx, HttpStatus.BAD_REQUEST, servletWebReq.getRequest());
 
         return ResponseEntity.status(errorResponse.getStatusCode()).body(errorResponse.getBody());
-    }*/
+    }
 
 
     // fallback for all exceptions

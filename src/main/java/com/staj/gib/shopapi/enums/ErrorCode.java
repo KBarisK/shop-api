@@ -10,6 +10,7 @@ public enum ErrorCode {
     PRODUCT_CATEGORY_NOT_FOUND("E005"),
     CART_NOT_FOUND("E006"),
     CART_FOR_USER_NOT_FOUND("E007"),
+    INVALID_ORDER_TYPE("E008"),
 
 
     // API validation error codes
@@ -21,6 +22,7 @@ public enum ErrorCode {
     LOCKING_FAILURE("V006"),
     DATA_INTEGRITY("V007"),
     ENDPOINT_NOT_FOUND("V008"),
+    HTTP_MESSAGE_NOT_READABLE("V009"),
 
     // AUTH related error codes
     ACCESS_DENIED("A001"),
