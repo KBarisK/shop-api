@@ -22,6 +22,7 @@ public enum ErrorCode {
     LOCKING_FAILURE("V006"),
     DATA_INTEGRITY("V007"),
     ENDPOINT_NOT_FOUND("V008"),
+    HTTP_MESSAGE_NOT_READABLE("V009"),
 
     // AUTH related error codes
     ACCESS_DENIED("A001"),
