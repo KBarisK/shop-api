@@ -2,6 +2,7 @@ package com.staj.gib.shopapi.controller;
 
 import com.staj.gib.shopapi.dto.request.CashOrderRequest;
 import com.staj.gib.shopapi.dto.request.InstallmentOrderRequest;
+import com.staj.gib.shopapi.dto.response.InstallmentPaymentDto;
 import com.staj.gib.shopapi.dto.response.OrderResponse;
 import com.staj.gib.shopapi.service.OrderService;
 import jakarta.validation.Valid;
@@ -30,12 +31,17 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public OrderResponse processOrder(@PathVariable @NotNull UUID orderId) {
+    public OrderResponse getOrder(@PathVariable @NotNull UUID orderId) {
         return orderService.getOrder(orderId);
     }
 
     @GetMapping("/user/{userId}")
     public List<OrderResponse> getOrdersOfUser(@PathVariable @NotNull UUID userId) {
         return orderService.getOrdersOfUser(userId);
+    }
+
+    @GetMapping("/installment/{orderId}")
+    public InstallmentPaymentDto getInstallmentPayment(@PathVariable @NotNull UUID orderId){
+        return orderService.getInstallmentPayment(orderId);
     }
 }

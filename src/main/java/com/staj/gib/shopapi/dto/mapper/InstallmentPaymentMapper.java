@@ -4,7 +4,7 @@ import com.staj.gib.shopapi.dto.response.InstallmentPaymentDto;
 import com.staj.gib.shopapi.entity.InstallmentPayment;
 import org.mapstruct.*;
 
-@Mapper(config = CentralMapperConfig.class)
+@Mapper(config = CentralMapperConfig.class, uses = InstallmentMapper.class)
 public interface InstallmentPaymentMapper {
     InstallmentPayment toEntity(InstallmentPaymentDto installmentPaymentDto);
 
@@ -15,6 +15,5 @@ public interface InstallmentPaymentMapper {
 
     InstallmentPaymentDto toDto(InstallmentPayment installmentPayment);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     InstallmentPayment partialUpdate(InstallmentPaymentDto installmentPaymentDto, @MappingTarget InstallmentPayment installmentPayment);
 }
