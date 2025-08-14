@@ -6,5 +6,4 @@ import lombok.Value;
 public class UserResponse {
     String token;
     ResponseUserDto user;
-    String asd;
 }
