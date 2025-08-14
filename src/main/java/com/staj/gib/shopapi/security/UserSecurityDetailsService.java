@@ -25,7 +25,7 @@ public class UserSecurityDetailsService implements UserDetailsService {
     }
 
     private UserSecurityDetails getUserSecurityDetails(String username) {
-   return this.userService.getUserDetails(username);
+        return this.userService.getUserDetails(username);
     }
 
 }
