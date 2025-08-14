@@ -11,6 +11,8 @@ public enum ErrorCode {
     CART_NOT_FOUND("E006"),
     CART_FOR_USER_NOT_FOUND("E007"),
     INVALID_ORDER_TYPE("E008"),
+    INSTALLMENT_NOT_FOUND("E009"),
+    INSTALLMENT_ALREADY_PAID("E010"),
 
 
     // API validation error codes

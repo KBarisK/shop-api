@@ -5,6 +5,7 @@ import com.staj.gib.shopapi.dto.mapper.InstallmentPaymentMapper;
 import com.staj.gib.shopapi.dto.mapper.OrderMapper;
 import com.staj.gib.shopapi.dto.request.CashOrderRequest;
 import com.staj.gib.shopapi.dto.request.InstallmentOrderRequest;
+import com.staj.gib.shopapi.dto.request.PayInstallmentRequest;
 import com.staj.gib.shopapi.dto.response.CartOrderDto;
 import com.staj.gib.shopapi.dto.response.InstallmentPaymentDto;
 import com.staj.gib.shopapi.dto.response.OrderResponse;
@@ -12,6 +13,7 @@ import com.staj.gib.shopapi.entity.Installment;
 import com.staj.gib.shopapi.entity.Order;
 import com.staj.gib.shopapi.entity.OrderItem;
 import com.staj.gib.shopapi.enums.ErrorCode;
+import com.staj.gib.shopapi.enums.OrderStatus;
 import com.staj.gib.shopapi.enums.PaymentMethod;
 import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.OrderRepository;
@@ -32,8 +34,6 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     private final OrderMapper orderMapper;
-    private final InstallmentPaymentMapper installmentPaymentMapper;
-
     private final CartService cartService;
     private final OrderValidator orderValidator;
 
@@ -49,6 +49,13 @@ public class OrderService {
                 orderRequest.getInstallmentCount().getValue());
     }
 
+    @Transactional
+    public OrderResponse markOrderFinished(UUID orderId){
+        Order order = this.orderRepository.findById(orderId)
+                .orElseThrow(()-> new BusinessException(ErrorCode.ORDER_NOT_FOUND, orderId));
+        order.setStatus(OrderStatus.FINISHED);
+        return this.orderMapper.toOrderResponse(orderRepository.save(order));
+    }
 
     private OrderResponse placeOrderInternal(UUID cartId, PaymentMethod paymentMethod, int installmentCount) {
         CartOrderDto cart = orderValidator.validateAndGetCart(cartId);
@@ -77,16 +84,6 @@ public class OrderService {
         Order order = this.orderRepository.findById(orderId)
                 .orElseThrow(()-> new BusinessException(ErrorCode.ORDER_NOT_FOUND, orderId));
         return this.orderMapper.toOrderResponse(order);
-    }
-
-    public InstallmentPaymentDto getInstallmentPayment(UUID orderId){
-        Order order = this.orderRepository.findById(orderId)
-                .orElseThrow(()-> new BusinessException(ErrorCode.ORDER_NOT_FOUND, orderId));
-
-        if(order.getPaymentMethod() != PaymentMethod.PAYMENT_INSTALLMENT)
-            throw new BusinessException(ErrorCode.INVALID_ORDER_TYPE, orderId);
-
-        return this.installmentPaymentMapper.toDto(order.getInstallmentPayment());
     }
 
 }

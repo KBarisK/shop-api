@@ -15,8 +15,11 @@ import java.util.UUID;
 @AllArgsConstructor
 public class InstallmentPayment extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="order_id")
+    @JoinColumn(name="order_id", updatable = false, insertable = false)
     private Order order;
+
+    @Column(name="order_id",nullable = false)
+    private UUID orderId;
 
     // remove installments if parent is gone
     @OneToMany(fetch = FetchType.LAZY,
