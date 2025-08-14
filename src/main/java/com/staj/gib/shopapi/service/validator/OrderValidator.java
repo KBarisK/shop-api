@@ -23,9 +23,7 @@ import java.util.UUID;
 public class OrderValidator {
     private final CartService cartService;
     private final ProductService productService;
-    private final InstallmentPaymentService  installmentPaymentService;
-    private final CategoryService categoryService;
-    private final TaxService taxService;
+    private final InstallmentService  installmentPaymentService;
     private final OrderMapper orderMapper;
 
 
@@ -82,7 +80,7 @@ public class OrderValidator {
 
     private void handleInstallmentPayment(Order order, int installmentCount) {
         installmentPaymentService.saveInstallmentPayment(
-                order,
+                orderMapper.toOrderResponse(order),
                 RoundingConstants.DEFAULT_MONTHLY_INTEREST_RATE,
                 installmentCount
         );
