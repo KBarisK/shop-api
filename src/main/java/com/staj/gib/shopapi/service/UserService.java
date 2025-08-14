@@ -12,8 +12,8 @@ import com.staj.gib.shopapi.enums.UserType;
 import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.UserRepository;
 import com.staj.gib.shopapi.security.JwtService;
+import com.staj.gib.shopapi.security.UserSecurityDetails;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -69,6 +69,13 @@ public class UserService {
                 () -> new BusinessException(ErrorCode.USER_NOT_FOUND, loginUser.getUsername()));
 
         return userMapper.userToUserResponse(user,jwtService.generateToken(loginUser.getUsername()));
+    }
+
+    public UserSecurityDetails getUserDetails(String username) {
+        User user =this.userRepository.findByUsername(username).orElseThrow(()
+                -> new BusinessException(ErrorCode.USER_NOT_FOUND, username));
+
+        return userMapper.userToUserSecurityDetails(user);
     }
 
 
