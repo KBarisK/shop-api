@@ -2,10 +2,7 @@ package com.staj.gib.shopapi.service.validator;
 
 import com.staj.gib.shopapi.constant.RoundingConstants;
 import com.staj.gib.shopapi.dto.mapper.OrderMapper;
-import com.staj.gib.shopapi.dto.request.InitialOrderRequest;
-import com.staj.gib.shopapi.dto.request.InstallmentOrderRequest;
 import com.staj.gib.shopapi.dto.response.*;
-import com.staj.gib.shopapi.entity.CashPayment;
 import com.staj.gib.shopapi.entity.Order;
 import com.staj.gib.shopapi.entity.OrderItem;
 import com.staj.gib.shopapi.enums.PaymentMethod;
@@ -17,13 +14,15 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class OrderValidator {
     private final CartService cartService;
     private final ProductService productService;
-    private final InstallmentService  installmentPaymentService;
+    private final CashPaymentService cashPaymentService;
+    private final InstallmentPaymentService installmentPaymentService;
     private final OrderMapper orderMapper;
 
 
@@ -51,11 +50,6 @@ public class OrderValidator {
         }
     }
 
-    public Order createInitialOrder(UUID userId, BigDecimal totalAmount, PaymentMethod paymentMethod) {
-        InitialOrderRequest request = new InitialOrderRequest(userId, totalAmount, paymentMethod);
-        return orderMapper.toInitialOrder(request);
-    }
-
     public List<OrderItem> processCartItems(List<CartItemDto> cartItems, Order order) {
         return cartItems.stream()
                 .map(cartItem -> {
@@ -65,7 +59,7 @@ public class OrderValidator {
                     productService.decrementStock(cartItem.getProduct().getId(), cartItem.getQuantity());
                     return orderItem;
                 })
-                .toList();
+                .collect(Collectors.toList()); // do not return an immutable list which JPA can't handle
     }
 
     private void validateCartItem(CartItemDto cartItem) {
@@ -87,9 +81,7 @@ public class OrderValidator {
     }
 
     private void handleCashPayment(Order order) {
-        CashPayment cashPayment = new CashPayment();
-        cashPayment.setOrder(order);
-        order.setCashPayment(cashPayment);
+        cashPaymentService.handleCashPayment(order.getId());
     }
 
 

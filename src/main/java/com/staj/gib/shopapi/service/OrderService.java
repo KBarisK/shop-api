@@ -4,6 +4,7 @@ import com.staj.gib.shopapi.dto.mapper.InstallmentMapper;
 import com.staj.gib.shopapi.dto.mapper.InstallmentPaymentMapper;
 import com.staj.gib.shopapi.dto.mapper.OrderMapper;
 import com.staj.gib.shopapi.dto.request.CashOrderRequest;
+import com.staj.gib.shopapi.dto.request.InitialOrderRequest;
 import com.staj.gib.shopapi.dto.request.InstallmentOrderRequest;
 import com.staj.gib.shopapi.dto.request.PayInstallmentRequest;
 import com.staj.gib.shopapi.dto.response.CartOrderDto;
@@ -57,12 +58,17 @@ public class OrderService {
         return this.orderMapper.toOrderResponse(orderRepository.save(order));
     }
 
+    private Order createInitialOrder(UUID userId, BigDecimal totalAmount, PaymentMethod paymentMethod) {
+        InitialOrderRequest request = new InitialOrderRequest(userId, totalAmount, paymentMethod);
+        return orderRepository.save(orderMapper.toInitialOrder(request));
+    }
+
     private OrderResponse placeOrderInternal(UUID cartId, PaymentMethod paymentMethod, int installmentCount) {
         CartOrderDto cart = orderValidator.validateAndGetCart(cartId);
 
         BigDecimal totalAmount = orderValidator.calculateOrderTotal(cart.getCartItems(), paymentMethod, installmentCount);
 
-        Order order = orderValidator.createInitialOrder(cart.getUserId(),totalAmount, paymentMethod);
+        Order order = createInitialOrder(cart.getUserId(),totalAmount, paymentMethod);
 
         List<OrderItem> orderItems = orderValidator.processCartItems(cart.getCartItems(), order);
         order.setOrderItems(orderItems);

@@ -34,17 +34,6 @@ public class Order extends BaseEntity{
     @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
 
-    // remove CashPayment if order gets removed
-    @OneToOne(mappedBy = "order",
-            cascade = CascadeType.ALL)
-    private CashPayment cashPayment;
-
-    // remove InstallmentPayment if order gets removed.
-    @OneToOne(mappedBy = "order",
-            cascade = CascadeType.ALL)
-    private InstallmentPayment installmentPayment;
-
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<OrderItem> orderItems;
