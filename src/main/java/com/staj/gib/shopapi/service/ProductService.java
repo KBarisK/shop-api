@@ -4,19 +4,21 @@ import com.staj.gib.shopapi.constant.RoundingConstants;
 import com.staj.gib.shopapi.dto.mapper.ProductMapper;
 import com.staj.gib.shopapi.dto.request.CreateProductRequest;
 import com.staj.gib.shopapi.dto.request.UpdateProductRequest;
-import com.staj.gib.shopapi.dto.response.*;
+import com.staj.gib.shopapi.dto.response.CategoryResponse;
+import com.staj.gib.shopapi.dto.response.CategoryTaxResponse;
+import com.staj.gib.shopapi.dto.response.ProductResponse;
+import com.staj.gib.shopapi.dto.response.TaxDetailDto;
 import com.staj.gib.shopapi.entity.Product;
-import com.staj.gib.shopapi.entity.ProductCategory;
-import com.staj.gib.shopapi.entity.ProductCategoryTax;
 import com.staj.gib.shopapi.enums.ErrorCode;
 import com.staj.gib.shopapi.exception.BusinessException;
 import com.staj.gib.shopapi.repository.ProductRepository;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,6 +28,7 @@ public class ProductService {
     private final ProductMapper mapper;
     private final CategoryService categoryService;
     private final TaxService taxService;
+    private final ProductMapper productMapper;
 
     public ProductResponse getProduct(UUID productid) {
         Product product = repository.findById(productid).orElseThrow(()
@@ -106,5 +109,12 @@ public class ProductService {
             );
         }
         return totalItemPrice.setScale(RoundingConstants.SCALE, RoundingConstants.ROUNDING);
+    }
+
+    public List<ProductResponse> getProductsByKeyword(String keyword){
+        return this.repository.search(keyword)
+                .stream()
+                .map(product -> mapper.toResponse(product, calculateAfterTaxPrice(product)))
+                .toList();
     }
 }

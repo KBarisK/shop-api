@@ -46,4 +46,9 @@ public class ProductController {
     public void deleteProduct(@PathVariable @NotNull UUID id) {
         service.deleteProductById(id);
     }
+
+    @GetMapping("/search/{keyword}")
+    public List<ProductResponse> search(@PathVariable String keyword) {
+        return service.getProductsByKeyword(keyword);
+    }
 }
