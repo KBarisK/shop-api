@@ -30,7 +30,4 @@ public class  CreateProductRequest implements Serializable {
     @NotNull(message = "Stock is required")
     @Min(value = 0, message = "Stock cannot be negative")
     Integer stock;
-
-    @Valid
-    List<ProductImageRequest> imageUrls;
 }

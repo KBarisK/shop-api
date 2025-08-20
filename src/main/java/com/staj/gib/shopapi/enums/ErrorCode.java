@@ -13,6 +13,7 @@ public enum ErrorCode {
     INVALID_ORDER_TYPE("E008"),
     INSTALLMENT_NOT_FOUND("E009"),
     INSTALLMENT_ALREADY_PAID("E010"),
+    IMAGE_UPLOAD_FAILED("E011"),
 
 
     // API validation error codes

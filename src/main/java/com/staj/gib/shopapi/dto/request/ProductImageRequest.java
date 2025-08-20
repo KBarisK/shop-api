@@ -1,5 +1,5 @@
 package com.staj.gib.shopapi.dto.request;
-
+import org.springframework.web.multipart.MultipartFile;
 import com.staj.gib.shopapi.entity.ProductImage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -14,7 +14,5 @@ import java.io.Serializable;
 @Value
 public class ProductImageRequest implements Serializable {
     @NotNull
-    @NotEmpty
-    @NotBlank
-    String imageUrl;
+    MultipartFile image;
 }

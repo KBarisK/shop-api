@@ -8,7 +8,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,11 +26,13 @@ public class ProductController {
         return service.getAllProducts();
     }
 
-    // todo when we have image hosting, do not accept URL, instead get the image and upload
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductResponse newProduct(@Valid @RequestBody CreateProductRequest newProduct) {
-        return service.createProduct(newProduct);
+    public ProductResponse createProduct(
+            @RequestPart("product") @Valid CreateProductRequest product,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
+    ) {
+        return service.createProduct(product, images); // change service signature
     }
 
     @GetMapping("/{id}")
@@ -36,9 +40,14 @@ public class ProductController {
         return service.getProduct(id);
     }
 
-    @PutMapping
-    public ProductResponse replaceProduct(@Valid @RequestBody UpdateProductRequest updateProduct) {
-        return service.updateProduct(updateProduct);
+
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ProductResponse updateProduct(
+            @RequestPart("product") @Valid UpdateProductRequest product,
+            @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages,
+            @RequestParam(value = "removeImageIds", required = false) List<UUID> removeImageIds
+    ) {
+        return service.updateProduct(product, newImages, removeImageIds); // change service signature
     }
 
     @DeleteMapping("/{id}")
