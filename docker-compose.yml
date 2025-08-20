@@ -13,3 +13,11 @@ services:
     ports:
       - '${DB_PORT}'
 
+  java-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
