@@ -35,7 +35,6 @@ dependencies {
     implementation 'commons-codec:commons-codec:1.19.0'
     implementation 'com.cloudinary:cloudinary-http5:2.0.0'
     implementation 'com.cloudinary:cloudinary-taglib:2.0.0'
-    implementation 'io.github.cdimascio:dotenv-java:2.2.4'
     compileOnly 'org.projectlombok:lombok:1.18.38'
     developmentOnly 'org.springframework.boot:spring-boot-devtools:3.5.3'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose:3.5.3'
