@@ -33,6 +33,8 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-api:0.12.6"
     implementation 'org.mapstruct:mapstruct:1.6.3'
     implementation 'commons-codec:commons-codec:1.19.0'
+    implementation 'com.cloudinary:cloudinary-http5:2.0.0'
+    implementation 'com.cloudinary:cloudinary-taglib:2.0.0'
     compileOnly 'org.projectlombok:lombok:1.18.38'
     developmentOnly 'org.springframework.boot:spring-boot-devtools:3.5.3'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose:3.5.3'

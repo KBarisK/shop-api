@@ -27,7 +27,4 @@ public class UpdateProductRequest implements Serializable {
 
     @Min(value = 0, message = "Stock cannot be negative")
     Integer stock;
-
-    @Valid
-    List<ProductImageRequest> imageUrls;
 }
